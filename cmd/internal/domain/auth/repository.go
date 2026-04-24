@@ -1,4 +1,10 @@
-package user
+package auth
+
+import "context"
+
+type Repository interface {
+	FindByEmail(ctx context.Context, email string) (*User, error)
+}
 
 type User struct {
 	ID       string `json:"id"`

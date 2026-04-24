@@ -1,0 +1,20 @@
+{
+    "name": "anubix",
+    "version": "1.0.0",
+    "description": "Backend for Anubix, a zero-knowledge password manager. All encryption and decryption happens on the client — the server never sees plaintext data or encryption keys.",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/dannegm/anubix-server.git"
+    },
+    "scripts": {
+        "test:auth+vaults": "node --env-file=.env ./test/integration/auth+vaults.mjs"
+    },
+    "keywords": [],
+    "author": "Daniel García (@dannegm) <im@danielgarcia.me>",
+    "license": "ISC",
+    "type": "commonjs",
+    "bugs": {
+        "url": "https://github.com/dannegm/anubix-server/issues"
+    },
+    "homepage": "https://github.com/dannegm/anubix-server#readme"
+}
