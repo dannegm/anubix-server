@@ -5,32 +5,226 @@ package ent
 import (
 	"time"
 
+	"github.com/dannegm/anubix-server/ent/attachment"
+	"github.com/dannegm/anubix-server/ent/auditlog"
+	"github.com/dannegm/anubix-server/ent/block"
+	"github.com/dannegm/anubix-server/ent/device"
+	"github.com/dannegm/anubix-server/ent/entry"
 	"github.com/dannegm/anubix-server/ent/schema"
+	"github.com/dannegm/anubix-server/ent/secret"
+	"github.com/dannegm/anubix-server/ent/session"
+	"github.com/dannegm/anubix-server/ent/sharetoken"
+	"github.com/dannegm/anubix-server/ent/tag"
 	"github.com/dannegm/anubix-server/ent/user"
+	"github.com/dannegm/anubix-server/ent/vault"
 )
 
 // The init function reads all schema descriptors with runtime code
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
+	attachmentFields := schema.Attachment{}.Fields()
+	_ = attachmentFields
+	// attachmentDescFilename is the schema descriptor for filename field.
+	attachmentDescFilename := attachmentFields[1].Descriptor()
+	// attachment.FilenameValidator is a validator for the "filename" field. It is called by the builders before save.
+	attachment.FilenameValidator = attachmentDescFilename.Validators[0].(func(string) error)
+	// attachmentDescMimeType is the schema descriptor for mime_type field.
+	attachmentDescMimeType := attachmentFields[2].Descriptor()
+	// attachment.MimeTypeValidator is a validator for the "mime_type" field. It is called by the builders before save.
+	attachment.MimeTypeValidator = attachmentDescMimeType.Validators[0].(func(string) error)
+	// attachmentDescCiphertext is the schema descriptor for ciphertext field.
+	attachmentDescCiphertext := attachmentFields[4].Descriptor()
+	// attachment.CiphertextValidator is a validator for the "ciphertext" field. It is called by the builders before save.
+	attachment.CiphertextValidator = attachmentDescCiphertext.Validators[0].(func([]byte) error)
+	// attachmentDescIv is the schema descriptor for iv field.
+	attachmentDescIv := attachmentFields[5].Descriptor()
+	// attachment.IvValidator is a validator for the "iv" field. It is called by the builders before save.
+	attachment.IvValidator = attachmentDescIv.Validators[0].(func(string) error)
+	// attachmentDescAuthTag is the schema descriptor for auth_tag field.
+	attachmentDescAuthTag := attachmentFields[6].Descriptor()
+	// attachment.AuthTagValidator is a validator for the "auth_tag" field. It is called by the builders before save.
+	attachment.AuthTagValidator = attachmentDescAuthTag.Validators[0].(func(string) error)
+	// attachmentDescCreatedAt is the schema descriptor for created_at field.
+	attachmentDescCreatedAt := attachmentFields[7].Descriptor()
+	// attachment.DefaultCreatedAt holds the default value on creation for the created_at field.
+	attachment.DefaultCreatedAt = attachmentDescCreatedAt.Default.(func() time.Time)
+	// attachmentDescID is the schema descriptor for id field.
+	attachmentDescID := attachmentFields[0].Descriptor()
+	// attachment.DefaultID holds the default value on creation for the id field.
+	attachment.DefaultID = attachmentDescID.Default.(func() string)
+	auditlogFields := schema.AuditLog{}.Fields()
+	_ = auditlogFields
+	// auditlogDescCreatedAt is the schema descriptor for created_at field.
+	auditlogDescCreatedAt := auditlogFields[5].Descriptor()
+	// auditlog.DefaultCreatedAt holds the default value on creation for the created_at field.
+	auditlog.DefaultCreatedAt = auditlogDescCreatedAt.Default.(func() time.Time)
+	// auditlogDescID is the schema descriptor for id field.
+	auditlogDescID := auditlogFields[0].Descriptor()
+	// auditlog.DefaultID holds the default value on creation for the id field.
+	auditlog.DefaultID = auditlogDescID.Default.(func() string)
+	blockFields := schema.Block{}.Fields()
+	_ = blockFields
+	// blockDescLabel is the schema descriptor for label field.
+	blockDescLabel := blockFields[1].Descriptor()
+	// block.LabelValidator is a validator for the "label" field. It is called by the builders before save.
+	block.LabelValidator = blockDescLabel.Validators[0].(func(string) error)
+	// blockDescSortOrder is the schema descriptor for sort_order field.
+	blockDescSortOrder := blockFields[2].Descriptor()
+	// block.DefaultSortOrder holds the default value on creation for the sort_order field.
+	block.DefaultSortOrder = blockDescSortOrder.Default.(int)
+	// blockDescID is the schema descriptor for id field.
+	blockDescID := blockFields[0].Descriptor()
+	// block.DefaultID holds the default value on creation for the id field.
+	block.DefaultID = blockDescID.Default.(func() string)
+	deviceFields := schema.Device{}.Fields()
+	_ = deviceFields
+	// deviceDescName is the schema descriptor for name field.
+	deviceDescName := deviceFields[1].Descriptor()
+	// device.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	device.NameValidator = deviceDescName.Validators[0].(func(string) error)
+	// deviceDescFingerprint is the schema descriptor for fingerprint field.
+	deviceDescFingerprint := deviceFields[2].Descriptor()
+	// device.FingerprintValidator is a validator for the "fingerprint" field. It is called by the builders before save.
+	device.FingerprintValidator = deviceDescFingerprint.Validators[0].(func(string) error)
+	// deviceDescCreatedAt is the schema descriptor for created_at field.
+	deviceDescCreatedAt := deviceFields[5].Descriptor()
+	// device.DefaultCreatedAt holds the default value on creation for the created_at field.
+	device.DefaultCreatedAt = deviceDescCreatedAt.Default.(func() time.Time)
+	// deviceDescID is the schema descriptor for id field.
+	deviceDescID := deviceFields[0].Descriptor()
+	// device.DefaultID holds the default value on creation for the id field.
+	device.DefaultID = deviceDescID.Default.(func() string)
+	entryFields := schema.Entry{}.Fields()
+	_ = entryFields
+	// entryDescLabel is the schema descriptor for label field.
+	entryDescLabel := entryFields[1].Descriptor()
+	// entry.LabelValidator is a validator for the "label" field. It is called by the builders before save.
+	entry.LabelValidator = entryDescLabel.Validators[0].(func(string) error)
+	// entryDescHasOtp is the schema descriptor for has_otp field.
+	entryDescHasOtp := entryFields[4].Descriptor()
+	// entry.DefaultHasOtp holds the default value on creation for the has_otp field.
+	entry.DefaultHasOtp = entryDescHasOtp.Default.(bool)
+	// entryDescIsFavorite is the schema descriptor for is_favorite field.
+	entryDescIsFavorite := entryFields[5].Descriptor()
+	// entry.DefaultIsFavorite holds the default value on creation for the is_favorite field.
+	entry.DefaultIsFavorite = entryDescIsFavorite.Default.(bool)
+	// entryDescCreatedAt is the schema descriptor for created_at field.
+	entryDescCreatedAt := entryFields[6].Descriptor()
+	// entry.DefaultCreatedAt holds the default value on creation for the created_at field.
+	entry.DefaultCreatedAt = entryDescCreatedAt.Default.(func() time.Time)
+	// entryDescUpdatedAt is the schema descriptor for updated_at field.
+	entryDescUpdatedAt := entryFields[7].Descriptor()
+	// entry.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	entry.DefaultUpdatedAt = entryDescUpdatedAt.Default.(func() time.Time)
+	// entry.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	entry.UpdateDefaultUpdatedAt = entryDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// entryDescID is the schema descriptor for id field.
+	entryDescID := entryFields[0].Descriptor()
+	// entry.DefaultID holds the default value on creation for the id field.
+	entry.DefaultID = entryDescID.Default.(func() string)
+	secretFields := schema.Secret{}.Fields()
+	_ = secretFields
+	// secretDescCiphertext is the schema descriptor for ciphertext field.
+	secretDescCiphertext := secretFields[1].Descriptor()
+	// secret.CiphertextValidator is a validator for the "ciphertext" field. It is called by the builders before save.
+	secret.CiphertextValidator = secretDescCiphertext.Validators[0].(func(string) error)
+	// secretDescIv is the schema descriptor for iv field.
+	secretDescIv := secretFields[2].Descriptor()
+	// secret.IvValidator is a validator for the "iv" field. It is called by the builders before save.
+	secret.IvValidator = secretDescIv.Validators[0].(func(string) error)
+	// secretDescAuthTag is the schema descriptor for auth_tag field.
+	secretDescAuthTag := secretFields[3].Descriptor()
+	// secret.AuthTagValidator is a validator for the "auth_tag" field. It is called by the builders before save.
+	secret.AuthTagValidator = secretDescAuthTag.Validators[0].(func(string) error)
+	// secretDescID is the schema descriptor for id field.
+	secretDescID := secretFields[0].Descriptor()
+	// secret.DefaultID holds the default value on creation for the id field.
+	secret.DefaultID = secretDescID.Default.(func() string)
+	sessionFields := schema.Session{}.Fields()
+	_ = sessionFields
+	// sessionDescTokenHash is the schema descriptor for token_hash field.
+	sessionDescTokenHash := sessionFields[1].Descriptor()
+	// session.TokenHashValidator is a validator for the "token_hash" field. It is called by the builders before save.
+	session.TokenHashValidator = sessionDescTokenHash.Validators[0].(func(string) error)
+	// sessionDescCreatedAt is the schema descriptor for created_at field.
+	sessionDescCreatedAt := sessionFields[3].Descriptor()
+	// session.DefaultCreatedAt holds the default value on creation for the created_at field.
+	session.DefaultCreatedAt = sessionDescCreatedAt.Default.(func() time.Time)
+	// sessionDescID is the schema descriptor for id field.
+	sessionDescID := sessionFields[0].Descriptor()
+	// session.DefaultID holds the default value on creation for the id field.
+	session.DefaultID = sessionDescID.Default.(func() string)
+	sharetokenFields := schema.ShareToken{}.Fields()
+	_ = sharetokenFields
+	// sharetokenDescUseCount is the schema descriptor for use_count field.
+	sharetokenDescUseCount := sharetokenFields[7].Descriptor()
+	// sharetoken.DefaultUseCount holds the default value on creation for the use_count field.
+	sharetoken.DefaultUseCount = sharetokenDescUseCount.Default.(int)
+	// sharetokenDescCreatedAt is the schema descriptor for created_at field.
+	sharetokenDescCreatedAt := sharetokenFields[10].Descriptor()
+	// sharetoken.DefaultCreatedAt holds the default value on creation for the created_at field.
+	sharetoken.DefaultCreatedAt = sharetokenDescCreatedAt.Default.(func() time.Time)
+	// sharetokenDescID is the schema descriptor for id field.
+	sharetokenDescID := sharetokenFields[0].Descriptor()
+	// sharetoken.DefaultID holds the default value on creation for the id field.
+	sharetoken.DefaultID = sharetokenDescID.Default.(func() string)
+	tagFields := schema.Tag{}.Fields()
+	_ = tagFields
+	// tagDescName is the schema descriptor for name field.
+	tagDescName := tagFields[1].Descriptor()
+	// tag.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	tag.NameValidator = tagDescName.Validators[0].(func(string) error)
+	// tagDescID is the schema descriptor for id field.
+	tagDescID := tagFields[0].Descriptor()
+	// tag.DefaultID holds the default value on creation for the id field.
+	tag.DefaultID = tagDescID.Default.(func() string)
 	userFields := schema.User{}.Fields()
 	_ = userFields
-	// userDescName is the schema descriptor for name field.
-	userDescName := userFields[0].Descriptor()
-	// user.NameValidator is a validator for the "name" field. It is called by the builders before save.
-	user.NameValidator = userDescName.Validators[0].(func(string) error)
 	// userDescEmail is the schema descriptor for email field.
 	userDescEmail := userFields[1].Descriptor()
 	// user.EmailValidator is a validator for the "email" field. It is called by the builders before save.
 	user.EmailValidator = userDescEmail.Validators[0].(func(string) error)
+	// userDescSalt is the schema descriptor for salt field.
+	userDescSalt := userFields[3].Descriptor()
+	// user.SaltValidator is a validator for the "salt" field. It is called by the builders before save.
+	user.SaltValidator = userDescSalt.Validators[0].(func(string) error)
+	// userDescTwoFactorEnabled is the schema descriptor for two_factor_enabled field.
+	userDescTwoFactorEnabled := userFields[6].Descriptor()
+	// user.DefaultTwoFactorEnabled holds the default value on creation for the two_factor_enabled field.
+	user.DefaultTwoFactorEnabled = userDescTwoFactorEnabled.Default.(bool)
 	// userDescCreatedAt is the schema descriptor for created_at field.
-	userDescCreatedAt := userFields[3].Descriptor()
+	userDescCreatedAt := userFields[9].Descriptor()
 	// user.DefaultCreatedAt holds the default value on creation for the created_at field.
 	user.DefaultCreatedAt = userDescCreatedAt.Default.(func() time.Time)
-	// userDescUpdatedAt is the schema descriptor for updated_at field.
-	userDescUpdatedAt := userFields[4].Descriptor()
-	// user.DefaultUpdatedAt holds the default value on creation for the updated_at field.
-	user.DefaultUpdatedAt = userDescUpdatedAt.Default.(func() time.Time)
-	// user.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
-	user.UpdateDefaultUpdatedAt = userDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// userDescID is the schema descriptor for id field.
+	userDescID := userFields[0].Descriptor()
+	// user.DefaultID holds the default value on creation for the id field.
+	user.DefaultID = userDescID.Default.(func() string)
+	vaultFields := schema.Vault{}.Fields()
+	_ = vaultFields
+	// vaultDescName is the schema descriptor for name field.
+	vaultDescName := vaultFields[1].Descriptor()
+	// vault.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	vault.NameValidator = vaultDescName.Validators[0].(func(string) error)
+	// vaultDescEncryptedVaultKey is the schema descriptor for encrypted_vault_key field.
+	vaultDescEncryptedVaultKey := vaultFields[2].Descriptor()
+	// vault.EncryptedVaultKeyValidator is a validator for the "encrypted_vault_key" field. It is called by the builders before save.
+	vault.EncryptedVaultKeyValidator = vaultDescEncryptedVaultKey.Validators[0].(func(string) error)
+	// vaultDescVaultKeyIv is the schema descriptor for vault_key_iv field.
+	vaultDescVaultKeyIv := vaultFields[3].Descriptor()
+	// vault.VaultKeyIvValidator is a validator for the "vault_key_iv" field. It is called by the builders before save.
+	vault.VaultKeyIvValidator = vaultDescVaultKeyIv.Validators[0].(func(string) error)
+	// vaultDescVaultKeyAuthTag is the schema descriptor for vault_key_auth_tag field.
+	vaultDescVaultKeyAuthTag := vaultFields[4].Descriptor()
+	// vault.VaultKeyAuthTagValidator is a validator for the "vault_key_auth_tag" field. It is called by the builders before save.
+	vault.VaultKeyAuthTagValidator = vaultDescVaultKeyAuthTag.Validators[0].(func(string) error)
+	// vaultDescCreatedAt is the schema descriptor for created_at field.
+	vaultDescCreatedAt := vaultFields[5].Descriptor()
+	// vault.DefaultCreatedAt holds the default value on creation for the created_at field.
+	vault.DefaultCreatedAt = vaultDescCreatedAt.Default.(func() time.Time)
+	// vaultDescID is the schema descriptor for id field.
+	vaultDescID := vaultFields[0].Descriptor()
+	// vault.DefaultID holds the default value on creation for the id field.
+	vault.DefaultID = vaultDescID.Default.(func() string)
 }

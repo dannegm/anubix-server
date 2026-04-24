@@ -11,8 +11,14 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/dannegm/anubix-server/ent/auditlog"
+	"github.com/dannegm/anubix-server/ent/device"
 	"github.com/dannegm/anubix-server/ent/predicate"
+	"github.com/dannegm/anubix-server/ent/session"
+	"github.com/dannegm/anubix-server/ent/sharetoken"
+	"github.com/dannegm/anubix-server/ent/tag"
 	"github.com/dannegm/anubix-server/ent/user"
+	"github.com/dannegm/anubix-server/ent/vault"
 )
 
 // UserUpdate is the builder for updating User entities.
@@ -25,20 +31,6 @@ type UserUpdate struct {
 // Where appends a list predicates to the UserUpdate builder.
 func (_u *UserUpdate) Where(ps ...predicate.User) *UserUpdate {
 	_u.mutation.Where(ps...)
-	return _u
-}
-
-// SetName sets the "name" field.
-func (_u *UserUpdate) SetName(v string) *UserUpdate {
-	_u.mutation.SetName(v)
-	return _u
-}
-
-// SetNillableName sets the "name" field if the given value is not nil.
-func (_u *UserUpdate) SetNillableName(v *string) *UserUpdate {
-	if v != nil {
-		_u.SetName(*v)
-	}
 	return _u
 }
 
@@ -56,24 +48,216 @@ func (_u *UserUpdate) SetNillableEmail(v *string) *UserUpdate {
 	return _u
 }
 
-// SetPassword sets the "password" field.
-func (_u *UserUpdate) SetPassword(v string) *UserUpdate {
-	_u.mutation.SetPassword(v)
+// SetAuthHash sets the "auth_hash" field.
+func (_u *UserUpdate) SetAuthHash(v string) *UserUpdate {
+	_u.mutation.SetAuthHash(v)
 	return _u
 }
 
-// SetNillablePassword sets the "password" field if the given value is not nil.
-func (_u *UserUpdate) SetNillablePassword(v *string) *UserUpdate {
+// SetNillableAuthHash sets the "auth_hash" field if the given value is not nil.
+func (_u *UserUpdate) SetNillableAuthHash(v *string) *UserUpdate {
 	if v != nil {
-		_u.SetPassword(*v)
+		_u.SetAuthHash(*v)
 	}
 	return _u
 }
 
-// SetUpdatedAt sets the "updated_at" field.
-func (_u *UserUpdate) SetUpdatedAt(v time.Time) *UserUpdate {
-	_u.mutation.SetUpdatedAt(v)
+// SetSalt sets the "salt" field.
+func (_u *UserUpdate) SetSalt(v string) *UserUpdate {
+	_u.mutation.SetSalt(v)
 	return _u
+}
+
+// SetNillableSalt sets the "salt" field if the given value is not nil.
+func (_u *UserUpdate) SetNillableSalt(v *string) *UserUpdate {
+	if v != nil {
+		_u.SetSalt(*v)
+	}
+	return _u
+}
+
+// SetEmailVerifiedAt sets the "email_verified_at" field.
+func (_u *UserUpdate) SetEmailVerifiedAt(v time.Time) *UserUpdate {
+	_u.mutation.SetEmailVerifiedAt(v)
+	return _u
+}
+
+// SetNillableEmailVerifiedAt sets the "email_verified_at" field if the given value is not nil.
+func (_u *UserUpdate) SetNillableEmailVerifiedAt(v *time.Time) *UserUpdate {
+	if v != nil {
+		_u.SetEmailVerifiedAt(*v)
+	}
+	return _u
+}
+
+// ClearEmailVerifiedAt clears the value of the "email_verified_at" field.
+func (_u *UserUpdate) ClearEmailVerifiedAt() *UserUpdate {
+	_u.mutation.ClearEmailVerifiedAt()
+	return _u
+}
+
+// SetTwoFactorSecret sets the "two_factor_secret" field.
+func (_u *UserUpdate) SetTwoFactorSecret(v string) *UserUpdate {
+	_u.mutation.SetTwoFactorSecret(v)
+	return _u
+}
+
+// SetNillableTwoFactorSecret sets the "two_factor_secret" field if the given value is not nil.
+func (_u *UserUpdate) SetNillableTwoFactorSecret(v *string) *UserUpdate {
+	if v != nil {
+		_u.SetTwoFactorSecret(*v)
+	}
+	return _u
+}
+
+// ClearTwoFactorSecret clears the value of the "two_factor_secret" field.
+func (_u *UserUpdate) ClearTwoFactorSecret() *UserUpdate {
+	_u.mutation.ClearTwoFactorSecret()
+	return _u
+}
+
+// SetTwoFactorEnabled sets the "two_factor_enabled" field.
+func (_u *UserUpdate) SetTwoFactorEnabled(v bool) *UserUpdate {
+	_u.mutation.SetTwoFactorEnabled(v)
+	return _u
+}
+
+// SetNillableTwoFactorEnabled sets the "two_factor_enabled" field if the given value is not nil.
+func (_u *UserUpdate) SetNillableTwoFactorEnabled(v *bool) *UserUpdate {
+	if v != nil {
+		_u.SetTwoFactorEnabled(*v)
+	}
+	return _u
+}
+
+// SetPasswordResetToken sets the "password_reset_token" field.
+func (_u *UserUpdate) SetPasswordResetToken(v string) *UserUpdate {
+	_u.mutation.SetPasswordResetToken(v)
+	return _u
+}
+
+// SetNillablePasswordResetToken sets the "password_reset_token" field if the given value is not nil.
+func (_u *UserUpdate) SetNillablePasswordResetToken(v *string) *UserUpdate {
+	if v != nil {
+		_u.SetPasswordResetToken(*v)
+	}
+	return _u
+}
+
+// ClearPasswordResetToken clears the value of the "password_reset_token" field.
+func (_u *UserUpdate) ClearPasswordResetToken() *UserUpdate {
+	_u.mutation.ClearPasswordResetToken()
+	return _u
+}
+
+// SetPasswordResetExpiresAt sets the "password_reset_expires_at" field.
+func (_u *UserUpdate) SetPasswordResetExpiresAt(v time.Time) *UserUpdate {
+	_u.mutation.SetPasswordResetExpiresAt(v)
+	return _u
+}
+
+// SetNillablePasswordResetExpiresAt sets the "password_reset_expires_at" field if the given value is not nil.
+func (_u *UserUpdate) SetNillablePasswordResetExpiresAt(v *time.Time) *UserUpdate {
+	if v != nil {
+		_u.SetPasswordResetExpiresAt(*v)
+	}
+	return _u
+}
+
+// ClearPasswordResetExpiresAt clears the value of the "password_reset_expires_at" field.
+func (_u *UserUpdate) ClearPasswordResetExpiresAt() *UserUpdate {
+	_u.mutation.ClearPasswordResetExpiresAt()
+	return _u
+}
+
+// AddVaultIDs adds the "vaults" edge to the Vault entity by IDs.
+func (_u *UserUpdate) AddVaultIDs(ids ...string) *UserUpdate {
+	_u.mutation.AddVaultIDs(ids...)
+	return _u
+}
+
+// AddVaults adds the "vaults" edges to the Vault entity.
+func (_u *UserUpdate) AddVaults(v ...*Vault) *UserUpdate {
+	ids := make([]string, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddVaultIDs(ids...)
+}
+
+// AddDeviceIDs adds the "devices" edge to the Device entity by IDs.
+func (_u *UserUpdate) AddDeviceIDs(ids ...string) *UserUpdate {
+	_u.mutation.AddDeviceIDs(ids...)
+	return _u
+}
+
+// AddDevices adds the "devices" edges to the Device entity.
+func (_u *UserUpdate) AddDevices(v ...*Device) *UserUpdate {
+	ids := make([]string, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddDeviceIDs(ids...)
+}
+
+// AddSessionIDs adds the "sessions" edge to the Session entity by IDs.
+func (_u *UserUpdate) AddSessionIDs(ids ...string) *UserUpdate {
+	_u.mutation.AddSessionIDs(ids...)
+	return _u
+}
+
+// AddSessions adds the "sessions" edges to the Session entity.
+func (_u *UserUpdate) AddSessions(v ...*Session) *UserUpdate {
+	ids := make([]string, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddSessionIDs(ids...)
+}
+
+// AddTagIDs adds the "tags" edge to the Tag entity by IDs.
+func (_u *UserUpdate) AddTagIDs(ids ...string) *UserUpdate {
+	_u.mutation.AddTagIDs(ids...)
+	return _u
+}
+
+// AddTags adds the "tags" edges to the Tag entity.
+func (_u *UserUpdate) AddTags(v ...*Tag) *UserUpdate {
+	ids := make([]string, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddTagIDs(ids...)
+}
+
+// AddAuditLogIDs adds the "audit_logs" edge to the AuditLog entity by IDs.
+func (_u *UserUpdate) AddAuditLogIDs(ids ...string) *UserUpdate {
+	_u.mutation.AddAuditLogIDs(ids...)
+	return _u
+}
+
+// AddAuditLogs adds the "audit_logs" edges to the AuditLog entity.
+func (_u *UserUpdate) AddAuditLogs(v ...*AuditLog) *UserUpdate {
+	ids := make([]string, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddAuditLogIDs(ids...)
+}
+
+// AddShareTokenIDs adds the "share_tokens" edge to the ShareToken entity by IDs.
+func (_u *UserUpdate) AddShareTokenIDs(ids ...string) *UserUpdate {
+	_u.mutation.AddShareTokenIDs(ids...)
+	return _u
+}
+
+// AddShareTokens adds the "share_tokens" edges to the ShareToken entity.
+func (_u *UserUpdate) AddShareTokens(v ...*ShareToken) *UserUpdate {
+	ids := make([]string, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddShareTokenIDs(ids...)
 }
 
 // Mutation returns the UserMutation object of the builder.
@@ -81,9 +265,134 @@ func (_u *UserUpdate) Mutation() *UserMutation {
 	return _u.mutation
 }
 
+// ClearVaults clears all "vaults" edges to the Vault entity.
+func (_u *UserUpdate) ClearVaults() *UserUpdate {
+	_u.mutation.ClearVaults()
+	return _u
+}
+
+// RemoveVaultIDs removes the "vaults" edge to Vault entities by IDs.
+func (_u *UserUpdate) RemoveVaultIDs(ids ...string) *UserUpdate {
+	_u.mutation.RemoveVaultIDs(ids...)
+	return _u
+}
+
+// RemoveVaults removes "vaults" edges to Vault entities.
+func (_u *UserUpdate) RemoveVaults(v ...*Vault) *UserUpdate {
+	ids := make([]string, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveVaultIDs(ids...)
+}
+
+// ClearDevices clears all "devices" edges to the Device entity.
+func (_u *UserUpdate) ClearDevices() *UserUpdate {
+	_u.mutation.ClearDevices()
+	return _u
+}
+
+// RemoveDeviceIDs removes the "devices" edge to Device entities by IDs.
+func (_u *UserUpdate) RemoveDeviceIDs(ids ...string) *UserUpdate {
+	_u.mutation.RemoveDeviceIDs(ids...)
+	return _u
+}
+
+// RemoveDevices removes "devices" edges to Device entities.
+func (_u *UserUpdate) RemoveDevices(v ...*Device) *UserUpdate {
+	ids := make([]string, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveDeviceIDs(ids...)
+}
+
+// ClearSessions clears all "sessions" edges to the Session entity.
+func (_u *UserUpdate) ClearSessions() *UserUpdate {
+	_u.mutation.ClearSessions()
+	return _u
+}
+
+// RemoveSessionIDs removes the "sessions" edge to Session entities by IDs.
+func (_u *UserUpdate) RemoveSessionIDs(ids ...string) *UserUpdate {
+	_u.mutation.RemoveSessionIDs(ids...)
+	return _u
+}
+
+// RemoveSessions removes "sessions" edges to Session entities.
+func (_u *UserUpdate) RemoveSessions(v ...*Session) *UserUpdate {
+	ids := make([]string, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveSessionIDs(ids...)
+}
+
+// ClearTags clears all "tags" edges to the Tag entity.
+func (_u *UserUpdate) ClearTags() *UserUpdate {
+	_u.mutation.ClearTags()
+	return _u
+}
+
+// RemoveTagIDs removes the "tags" edge to Tag entities by IDs.
+func (_u *UserUpdate) RemoveTagIDs(ids ...string) *UserUpdate {
+	_u.mutation.RemoveTagIDs(ids...)
+	return _u
+}
+
+// RemoveTags removes "tags" edges to Tag entities.
+func (_u *UserUpdate) RemoveTags(v ...*Tag) *UserUpdate {
+	ids := make([]string, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveTagIDs(ids...)
+}
+
+// ClearAuditLogs clears all "audit_logs" edges to the AuditLog entity.
+func (_u *UserUpdate) ClearAuditLogs() *UserUpdate {
+	_u.mutation.ClearAuditLogs()
+	return _u
+}
+
+// RemoveAuditLogIDs removes the "audit_logs" edge to AuditLog entities by IDs.
+func (_u *UserUpdate) RemoveAuditLogIDs(ids ...string) *UserUpdate {
+	_u.mutation.RemoveAuditLogIDs(ids...)
+	return _u
+}
+
+// RemoveAuditLogs removes "audit_logs" edges to AuditLog entities.
+func (_u *UserUpdate) RemoveAuditLogs(v ...*AuditLog) *UserUpdate {
+	ids := make([]string, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveAuditLogIDs(ids...)
+}
+
+// ClearShareTokens clears all "share_tokens" edges to the ShareToken entity.
+func (_u *UserUpdate) ClearShareTokens() *UserUpdate {
+	_u.mutation.ClearShareTokens()
+	return _u
+}
+
+// RemoveShareTokenIDs removes the "share_tokens" edge to ShareToken entities by IDs.
+func (_u *UserUpdate) RemoveShareTokenIDs(ids ...string) *UserUpdate {
+	_u.mutation.RemoveShareTokenIDs(ids...)
+	return _u
+}
+
+// RemoveShareTokens removes "share_tokens" edges to ShareToken entities.
+func (_u *UserUpdate) RemoveShareTokens(v ...*ShareToken) *UserUpdate {
+	ids := make([]string, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveShareTokenIDs(ids...)
+}
+
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (_u *UserUpdate) Save(ctx context.Context) (int, error) {
-	_u.defaults()
 	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
@@ -109,24 +418,16 @@ func (_u *UserUpdate) ExecX(ctx context.Context) {
 	}
 }
 
-// defaults sets the default values of the builder before save.
-func (_u *UserUpdate) defaults() {
-	if _, ok := _u.mutation.UpdatedAt(); !ok {
-		v := user.UpdateDefaultUpdatedAt()
-		_u.mutation.SetUpdatedAt(v)
-	}
-}
-
 // check runs all checks and user-defined validators on the builder.
 func (_u *UserUpdate) check() error {
-	if v, ok := _u.mutation.Name(); ok {
-		if err := user.NameValidator(v); err != nil {
-			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "User.name": %w`, err)}
-		}
-	}
 	if v, ok := _u.mutation.Email(); ok {
 		if err := user.EmailValidator(v); err != nil {
 			return &ValidationError{Name: "email", err: fmt.Errorf(`ent: validator failed for field "User.email": %w`, err)}
+		}
+	}
+	if v, ok := _u.mutation.Salt(); ok {
+		if err := user.SaltValidator(v); err != nil {
+			return &ValidationError{Name: "salt", err: fmt.Errorf(`ent: validator failed for field "User.salt": %w`, err)}
 		}
 	}
 	return nil
@@ -136,7 +437,7 @@ func (_u *UserUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if err := _u.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(user.Table, user.Columns, sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt))
+	_spec := sqlgraph.NewUpdateSpec(user.Table, user.Columns, sqlgraph.NewFieldSpec(user.FieldID, field.TypeString))
 	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -144,17 +445,311 @@ func (_u *UserUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 			}
 		}
 	}
-	if value, ok := _u.mutation.Name(); ok {
-		_spec.SetField(user.FieldName, field.TypeString, value)
-	}
 	if value, ok := _u.mutation.Email(); ok {
 		_spec.SetField(user.FieldEmail, field.TypeString, value)
 	}
-	if value, ok := _u.mutation.Password(); ok {
-		_spec.SetField(user.FieldPassword, field.TypeString, value)
+	if value, ok := _u.mutation.AuthHash(); ok {
+		_spec.SetField(user.FieldAuthHash, field.TypeString, value)
 	}
-	if value, ok := _u.mutation.UpdatedAt(); ok {
-		_spec.SetField(user.FieldUpdatedAt, field.TypeTime, value)
+	if value, ok := _u.mutation.Salt(); ok {
+		_spec.SetField(user.FieldSalt, field.TypeString, value)
+	}
+	if value, ok := _u.mutation.EmailVerifiedAt(); ok {
+		_spec.SetField(user.FieldEmailVerifiedAt, field.TypeTime, value)
+	}
+	if _u.mutation.EmailVerifiedAtCleared() {
+		_spec.ClearField(user.FieldEmailVerifiedAt, field.TypeTime)
+	}
+	if value, ok := _u.mutation.TwoFactorSecret(); ok {
+		_spec.SetField(user.FieldTwoFactorSecret, field.TypeString, value)
+	}
+	if _u.mutation.TwoFactorSecretCleared() {
+		_spec.ClearField(user.FieldTwoFactorSecret, field.TypeString)
+	}
+	if value, ok := _u.mutation.TwoFactorEnabled(); ok {
+		_spec.SetField(user.FieldTwoFactorEnabled, field.TypeBool, value)
+	}
+	if value, ok := _u.mutation.PasswordResetToken(); ok {
+		_spec.SetField(user.FieldPasswordResetToken, field.TypeString, value)
+	}
+	if _u.mutation.PasswordResetTokenCleared() {
+		_spec.ClearField(user.FieldPasswordResetToken, field.TypeString)
+	}
+	if value, ok := _u.mutation.PasswordResetExpiresAt(); ok {
+		_spec.SetField(user.FieldPasswordResetExpiresAt, field.TypeTime, value)
+	}
+	if _u.mutation.PasswordResetExpiresAtCleared() {
+		_spec.ClearField(user.FieldPasswordResetExpiresAt, field.TypeTime)
+	}
+	if _u.mutation.VaultsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.VaultsTable,
+			Columns: []string{user.VaultsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(vault.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedVaultsIDs(); len(nodes) > 0 && !_u.mutation.VaultsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.VaultsTable,
+			Columns: []string{user.VaultsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(vault.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.VaultsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.VaultsTable,
+			Columns: []string{user.VaultsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(vault.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.DevicesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.DevicesTable,
+			Columns: []string{user.DevicesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(device.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedDevicesIDs(); len(nodes) > 0 && !_u.mutation.DevicesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.DevicesTable,
+			Columns: []string{user.DevicesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(device.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.DevicesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.DevicesTable,
+			Columns: []string{user.DevicesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(device.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.SessionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.SessionsTable,
+			Columns: []string{user.SessionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(session.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedSessionsIDs(); len(nodes) > 0 && !_u.mutation.SessionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.SessionsTable,
+			Columns: []string{user.SessionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(session.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.SessionsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.SessionsTable,
+			Columns: []string{user.SessionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(session.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.TagsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.TagsTable,
+			Columns: []string{user.TagsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(tag.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedTagsIDs(); len(nodes) > 0 && !_u.mutation.TagsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.TagsTable,
+			Columns: []string{user.TagsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(tag.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.TagsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.TagsTable,
+			Columns: []string{user.TagsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(tag.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.AuditLogsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.AuditLogsTable,
+			Columns: []string{user.AuditLogsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(auditlog.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedAuditLogsIDs(); len(nodes) > 0 && !_u.mutation.AuditLogsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.AuditLogsTable,
+			Columns: []string{user.AuditLogsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(auditlog.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.AuditLogsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.AuditLogsTable,
+			Columns: []string{user.AuditLogsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(auditlog.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.ShareTokensCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.ShareTokensTable,
+			Columns: []string{user.ShareTokensColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(sharetoken.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedShareTokensIDs(); len(nodes) > 0 && !_u.mutation.ShareTokensCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.ShareTokensTable,
+			Columns: []string{user.ShareTokensColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(sharetoken.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.ShareTokensIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.ShareTokensTable,
+			Columns: []string{user.ShareTokensColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(sharetoken.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -176,20 +771,6 @@ type UserUpdateOne struct {
 	mutation *UserMutation
 }
 
-// SetName sets the "name" field.
-func (_u *UserUpdateOne) SetName(v string) *UserUpdateOne {
-	_u.mutation.SetName(v)
-	return _u
-}
-
-// SetNillableName sets the "name" field if the given value is not nil.
-func (_u *UserUpdateOne) SetNillableName(v *string) *UserUpdateOne {
-	if v != nil {
-		_u.SetName(*v)
-	}
-	return _u
-}
-
 // SetEmail sets the "email" field.
 func (_u *UserUpdateOne) SetEmail(v string) *UserUpdateOne {
 	_u.mutation.SetEmail(v)
@@ -204,29 +785,347 @@ func (_u *UserUpdateOne) SetNillableEmail(v *string) *UserUpdateOne {
 	return _u
 }
 
-// SetPassword sets the "password" field.
-func (_u *UserUpdateOne) SetPassword(v string) *UserUpdateOne {
-	_u.mutation.SetPassword(v)
+// SetAuthHash sets the "auth_hash" field.
+func (_u *UserUpdateOne) SetAuthHash(v string) *UserUpdateOne {
+	_u.mutation.SetAuthHash(v)
 	return _u
 }
 
-// SetNillablePassword sets the "password" field if the given value is not nil.
-func (_u *UserUpdateOne) SetNillablePassword(v *string) *UserUpdateOne {
+// SetNillableAuthHash sets the "auth_hash" field if the given value is not nil.
+func (_u *UserUpdateOne) SetNillableAuthHash(v *string) *UserUpdateOne {
 	if v != nil {
-		_u.SetPassword(*v)
+		_u.SetAuthHash(*v)
 	}
 	return _u
 }
 
-// SetUpdatedAt sets the "updated_at" field.
-func (_u *UserUpdateOne) SetUpdatedAt(v time.Time) *UserUpdateOne {
-	_u.mutation.SetUpdatedAt(v)
+// SetSalt sets the "salt" field.
+func (_u *UserUpdateOne) SetSalt(v string) *UserUpdateOne {
+	_u.mutation.SetSalt(v)
 	return _u
+}
+
+// SetNillableSalt sets the "salt" field if the given value is not nil.
+func (_u *UserUpdateOne) SetNillableSalt(v *string) *UserUpdateOne {
+	if v != nil {
+		_u.SetSalt(*v)
+	}
+	return _u
+}
+
+// SetEmailVerifiedAt sets the "email_verified_at" field.
+func (_u *UserUpdateOne) SetEmailVerifiedAt(v time.Time) *UserUpdateOne {
+	_u.mutation.SetEmailVerifiedAt(v)
+	return _u
+}
+
+// SetNillableEmailVerifiedAt sets the "email_verified_at" field if the given value is not nil.
+func (_u *UserUpdateOne) SetNillableEmailVerifiedAt(v *time.Time) *UserUpdateOne {
+	if v != nil {
+		_u.SetEmailVerifiedAt(*v)
+	}
+	return _u
+}
+
+// ClearEmailVerifiedAt clears the value of the "email_verified_at" field.
+func (_u *UserUpdateOne) ClearEmailVerifiedAt() *UserUpdateOne {
+	_u.mutation.ClearEmailVerifiedAt()
+	return _u
+}
+
+// SetTwoFactorSecret sets the "two_factor_secret" field.
+func (_u *UserUpdateOne) SetTwoFactorSecret(v string) *UserUpdateOne {
+	_u.mutation.SetTwoFactorSecret(v)
+	return _u
+}
+
+// SetNillableTwoFactorSecret sets the "two_factor_secret" field if the given value is not nil.
+func (_u *UserUpdateOne) SetNillableTwoFactorSecret(v *string) *UserUpdateOne {
+	if v != nil {
+		_u.SetTwoFactorSecret(*v)
+	}
+	return _u
+}
+
+// ClearTwoFactorSecret clears the value of the "two_factor_secret" field.
+func (_u *UserUpdateOne) ClearTwoFactorSecret() *UserUpdateOne {
+	_u.mutation.ClearTwoFactorSecret()
+	return _u
+}
+
+// SetTwoFactorEnabled sets the "two_factor_enabled" field.
+func (_u *UserUpdateOne) SetTwoFactorEnabled(v bool) *UserUpdateOne {
+	_u.mutation.SetTwoFactorEnabled(v)
+	return _u
+}
+
+// SetNillableTwoFactorEnabled sets the "two_factor_enabled" field if the given value is not nil.
+func (_u *UserUpdateOne) SetNillableTwoFactorEnabled(v *bool) *UserUpdateOne {
+	if v != nil {
+		_u.SetTwoFactorEnabled(*v)
+	}
+	return _u
+}
+
+// SetPasswordResetToken sets the "password_reset_token" field.
+func (_u *UserUpdateOne) SetPasswordResetToken(v string) *UserUpdateOne {
+	_u.mutation.SetPasswordResetToken(v)
+	return _u
+}
+
+// SetNillablePasswordResetToken sets the "password_reset_token" field if the given value is not nil.
+func (_u *UserUpdateOne) SetNillablePasswordResetToken(v *string) *UserUpdateOne {
+	if v != nil {
+		_u.SetPasswordResetToken(*v)
+	}
+	return _u
+}
+
+// ClearPasswordResetToken clears the value of the "password_reset_token" field.
+func (_u *UserUpdateOne) ClearPasswordResetToken() *UserUpdateOne {
+	_u.mutation.ClearPasswordResetToken()
+	return _u
+}
+
+// SetPasswordResetExpiresAt sets the "password_reset_expires_at" field.
+func (_u *UserUpdateOne) SetPasswordResetExpiresAt(v time.Time) *UserUpdateOne {
+	_u.mutation.SetPasswordResetExpiresAt(v)
+	return _u
+}
+
+// SetNillablePasswordResetExpiresAt sets the "password_reset_expires_at" field if the given value is not nil.
+func (_u *UserUpdateOne) SetNillablePasswordResetExpiresAt(v *time.Time) *UserUpdateOne {
+	if v != nil {
+		_u.SetPasswordResetExpiresAt(*v)
+	}
+	return _u
+}
+
+// ClearPasswordResetExpiresAt clears the value of the "password_reset_expires_at" field.
+func (_u *UserUpdateOne) ClearPasswordResetExpiresAt() *UserUpdateOne {
+	_u.mutation.ClearPasswordResetExpiresAt()
+	return _u
+}
+
+// AddVaultIDs adds the "vaults" edge to the Vault entity by IDs.
+func (_u *UserUpdateOne) AddVaultIDs(ids ...string) *UserUpdateOne {
+	_u.mutation.AddVaultIDs(ids...)
+	return _u
+}
+
+// AddVaults adds the "vaults" edges to the Vault entity.
+func (_u *UserUpdateOne) AddVaults(v ...*Vault) *UserUpdateOne {
+	ids := make([]string, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddVaultIDs(ids...)
+}
+
+// AddDeviceIDs adds the "devices" edge to the Device entity by IDs.
+func (_u *UserUpdateOne) AddDeviceIDs(ids ...string) *UserUpdateOne {
+	_u.mutation.AddDeviceIDs(ids...)
+	return _u
+}
+
+// AddDevices adds the "devices" edges to the Device entity.
+func (_u *UserUpdateOne) AddDevices(v ...*Device) *UserUpdateOne {
+	ids := make([]string, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddDeviceIDs(ids...)
+}
+
+// AddSessionIDs adds the "sessions" edge to the Session entity by IDs.
+func (_u *UserUpdateOne) AddSessionIDs(ids ...string) *UserUpdateOne {
+	_u.mutation.AddSessionIDs(ids...)
+	return _u
+}
+
+// AddSessions adds the "sessions" edges to the Session entity.
+func (_u *UserUpdateOne) AddSessions(v ...*Session) *UserUpdateOne {
+	ids := make([]string, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddSessionIDs(ids...)
+}
+
+// AddTagIDs adds the "tags" edge to the Tag entity by IDs.
+func (_u *UserUpdateOne) AddTagIDs(ids ...string) *UserUpdateOne {
+	_u.mutation.AddTagIDs(ids...)
+	return _u
+}
+
+// AddTags adds the "tags" edges to the Tag entity.
+func (_u *UserUpdateOne) AddTags(v ...*Tag) *UserUpdateOne {
+	ids := make([]string, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddTagIDs(ids...)
+}
+
+// AddAuditLogIDs adds the "audit_logs" edge to the AuditLog entity by IDs.
+func (_u *UserUpdateOne) AddAuditLogIDs(ids ...string) *UserUpdateOne {
+	_u.mutation.AddAuditLogIDs(ids...)
+	return _u
+}
+
+// AddAuditLogs adds the "audit_logs" edges to the AuditLog entity.
+func (_u *UserUpdateOne) AddAuditLogs(v ...*AuditLog) *UserUpdateOne {
+	ids := make([]string, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddAuditLogIDs(ids...)
+}
+
+// AddShareTokenIDs adds the "share_tokens" edge to the ShareToken entity by IDs.
+func (_u *UserUpdateOne) AddShareTokenIDs(ids ...string) *UserUpdateOne {
+	_u.mutation.AddShareTokenIDs(ids...)
+	return _u
+}
+
+// AddShareTokens adds the "share_tokens" edges to the ShareToken entity.
+func (_u *UserUpdateOne) AddShareTokens(v ...*ShareToken) *UserUpdateOne {
+	ids := make([]string, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddShareTokenIDs(ids...)
 }
 
 // Mutation returns the UserMutation object of the builder.
 func (_u *UserUpdateOne) Mutation() *UserMutation {
 	return _u.mutation
+}
+
+// ClearVaults clears all "vaults" edges to the Vault entity.
+func (_u *UserUpdateOne) ClearVaults() *UserUpdateOne {
+	_u.mutation.ClearVaults()
+	return _u
+}
+
+// RemoveVaultIDs removes the "vaults" edge to Vault entities by IDs.
+func (_u *UserUpdateOne) RemoveVaultIDs(ids ...string) *UserUpdateOne {
+	_u.mutation.RemoveVaultIDs(ids...)
+	return _u
+}
+
+// RemoveVaults removes "vaults" edges to Vault entities.
+func (_u *UserUpdateOne) RemoveVaults(v ...*Vault) *UserUpdateOne {
+	ids := make([]string, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveVaultIDs(ids...)
+}
+
+// ClearDevices clears all "devices" edges to the Device entity.
+func (_u *UserUpdateOne) ClearDevices() *UserUpdateOne {
+	_u.mutation.ClearDevices()
+	return _u
+}
+
+// RemoveDeviceIDs removes the "devices" edge to Device entities by IDs.
+func (_u *UserUpdateOne) RemoveDeviceIDs(ids ...string) *UserUpdateOne {
+	_u.mutation.RemoveDeviceIDs(ids...)
+	return _u
+}
+
+// RemoveDevices removes "devices" edges to Device entities.
+func (_u *UserUpdateOne) RemoveDevices(v ...*Device) *UserUpdateOne {
+	ids := make([]string, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveDeviceIDs(ids...)
+}
+
+// ClearSessions clears all "sessions" edges to the Session entity.
+func (_u *UserUpdateOne) ClearSessions() *UserUpdateOne {
+	_u.mutation.ClearSessions()
+	return _u
+}
+
+// RemoveSessionIDs removes the "sessions" edge to Session entities by IDs.
+func (_u *UserUpdateOne) RemoveSessionIDs(ids ...string) *UserUpdateOne {
+	_u.mutation.RemoveSessionIDs(ids...)
+	return _u
+}
+
+// RemoveSessions removes "sessions" edges to Session entities.
+func (_u *UserUpdateOne) RemoveSessions(v ...*Session) *UserUpdateOne {
+	ids := make([]string, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveSessionIDs(ids...)
+}
+
+// ClearTags clears all "tags" edges to the Tag entity.
+func (_u *UserUpdateOne) ClearTags() *UserUpdateOne {
+	_u.mutation.ClearTags()
+	return _u
+}
+
+// RemoveTagIDs removes the "tags" edge to Tag entities by IDs.
+func (_u *UserUpdateOne) RemoveTagIDs(ids ...string) *UserUpdateOne {
+	_u.mutation.RemoveTagIDs(ids...)
+	return _u
+}
+
+// RemoveTags removes "tags" edges to Tag entities.
+func (_u *UserUpdateOne) RemoveTags(v ...*Tag) *UserUpdateOne {
+	ids := make([]string, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveTagIDs(ids...)
+}
+
+// ClearAuditLogs clears all "audit_logs" edges to the AuditLog entity.
+func (_u *UserUpdateOne) ClearAuditLogs() *UserUpdateOne {
+	_u.mutation.ClearAuditLogs()
+	return _u
+}
+
+// RemoveAuditLogIDs removes the "audit_logs" edge to AuditLog entities by IDs.
+func (_u *UserUpdateOne) RemoveAuditLogIDs(ids ...string) *UserUpdateOne {
+	_u.mutation.RemoveAuditLogIDs(ids...)
+	return _u
+}
+
+// RemoveAuditLogs removes "audit_logs" edges to AuditLog entities.
+func (_u *UserUpdateOne) RemoveAuditLogs(v ...*AuditLog) *UserUpdateOne {
+	ids := make([]string, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveAuditLogIDs(ids...)
+}
+
+// ClearShareTokens clears all "share_tokens" edges to the ShareToken entity.
+func (_u *UserUpdateOne) ClearShareTokens() *UserUpdateOne {
+	_u.mutation.ClearShareTokens()
+	return _u
+}
+
+// RemoveShareTokenIDs removes the "share_tokens" edge to ShareToken entities by IDs.
+func (_u *UserUpdateOne) RemoveShareTokenIDs(ids ...string) *UserUpdateOne {
+	_u.mutation.RemoveShareTokenIDs(ids...)
+	return _u
+}
+
+// RemoveShareTokens removes "share_tokens" edges to ShareToken entities.
+func (_u *UserUpdateOne) RemoveShareTokens(v ...*ShareToken) *UserUpdateOne {
+	ids := make([]string, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveShareTokenIDs(ids...)
 }
 
 // Where appends a list predicates to the UserUpdate builder.
@@ -244,7 +1143,6 @@ func (_u *UserUpdateOne) Select(field string, fields ...string) *UserUpdateOne {
 
 // Save executes the query and returns the updated User entity.
 func (_u *UserUpdateOne) Save(ctx context.Context) (*User, error) {
-	_u.defaults()
 	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
@@ -270,24 +1168,16 @@ func (_u *UserUpdateOne) ExecX(ctx context.Context) {
 	}
 }
 
-// defaults sets the default values of the builder before save.
-func (_u *UserUpdateOne) defaults() {
-	if _, ok := _u.mutation.UpdatedAt(); !ok {
-		v := user.UpdateDefaultUpdatedAt()
-		_u.mutation.SetUpdatedAt(v)
-	}
-}
-
 // check runs all checks and user-defined validators on the builder.
 func (_u *UserUpdateOne) check() error {
-	if v, ok := _u.mutation.Name(); ok {
-		if err := user.NameValidator(v); err != nil {
-			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "User.name": %w`, err)}
-		}
-	}
 	if v, ok := _u.mutation.Email(); ok {
 		if err := user.EmailValidator(v); err != nil {
 			return &ValidationError{Name: "email", err: fmt.Errorf(`ent: validator failed for field "User.email": %w`, err)}
+		}
+	}
+	if v, ok := _u.mutation.Salt(); ok {
+		if err := user.SaltValidator(v); err != nil {
+			return &ValidationError{Name: "salt", err: fmt.Errorf(`ent: validator failed for field "User.salt": %w`, err)}
 		}
 	}
 	return nil
@@ -297,7 +1187,7 @@ func (_u *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) {
 	if err := _u.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(user.Table, user.Columns, sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt))
+	_spec := sqlgraph.NewUpdateSpec(user.Table, user.Columns, sqlgraph.NewFieldSpec(user.FieldID, field.TypeString))
 	id, ok := _u.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "User.id" for update`)}
@@ -322,17 +1212,311 @@ func (_u *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) {
 			}
 		}
 	}
-	if value, ok := _u.mutation.Name(); ok {
-		_spec.SetField(user.FieldName, field.TypeString, value)
-	}
 	if value, ok := _u.mutation.Email(); ok {
 		_spec.SetField(user.FieldEmail, field.TypeString, value)
 	}
-	if value, ok := _u.mutation.Password(); ok {
-		_spec.SetField(user.FieldPassword, field.TypeString, value)
+	if value, ok := _u.mutation.AuthHash(); ok {
+		_spec.SetField(user.FieldAuthHash, field.TypeString, value)
 	}
-	if value, ok := _u.mutation.UpdatedAt(); ok {
-		_spec.SetField(user.FieldUpdatedAt, field.TypeTime, value)
+	if value, ok := _u.mutation.Salt(); ok {
+		_spec.SetField(user.FieldSalt, field.TypeString, value)
+	}
+	if value, ok := _u.mutation.EmailVerifiedAt(); ok {
+		_spec.SetField(user.FieldEmailVerifiedAt, field.TypeTime, value)
+	}
+	if _u.mutation.EmailVerifiedAtCleared() {
+		_spec.ClearField(user.FieldEmailVerifiedAt, field.TypeTime)
+	}
+	if value, ok := _u.mutation.TwoFactorSecret(); ok {
+		_spec.SetField(user.FieldTwoFactorSecret, field.TypeString, value)
+	}
+	if _u.mutation.TwoFactorSecretCleared() {
+		_spec.ClearField(user.FieldTwoFactorSecret, field.TypeString)
+	}
+	if value, ok := _u.mutation.TwoFactorEnabled(); ok {
+		_spec.SetField(user.FieldTwoFactorEnabled, field.TypeBool, value)
+	}
+	if value, ok := _u.mutation.PasswordResetToken(); ok {
+		_spec.SetField(user.FieldPasswordResetToken, field.TypeString, value)
+	}
+	if _u.mutation.PasswordResetTokenCleared() {
+		_spec.ClearField(user.FieldPasswordResetToken, field.TypeString)
+	}
+	if value, ok := _u.mutation.PasswordResetExpiresAt(); ok {
+		_spec.SetField(user.FieldPasswordResetExpiresAt, field.TypeTime, value)
+	}
+	if _u.mutation.PasswordResetExpiresAtCleared() {
+		_spec.ClearField(user.FieldPasswordResetExpiresAt, field.TypeTime)
+	}
+	if _u.mutation.VaultsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.VaultsTable,
+			Columns: []string{user.VaultsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(vault.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedVaultsIDs(); len(nodes) > 0 && !_u.mutation.VaultsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.VaultsTable,
+			Columns: []string{user.VaultsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(vault.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.VaultsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.VaultsTable,
+			Columns: []string{user.VaultsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(vault.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.DevicesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.DevicesTable,
+			Columns: []string{user.DevicesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(device.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedDevicesIDs(); len(nodes) > 0 && !_u.mutation.DevicesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.DevicesTable,
+			Columns: []string{user.DevicesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(device.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.DevicesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.DevicesTable,
+			Columns: []string{user.DevicesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(device.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.SessionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.SessionsTable,
+			Columns: []string{user.SessionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(session.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedSessionsIDs(); len(nodes) > 0 && !_u.mutation.SessionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.SessionsTable,
+			Columns: []string{user.SessionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(session.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.SessionsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.SessionsTable,
+			Columns: []string{user.SessionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(session.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.TagsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.TagsTable,
+			Columns: []string{user.TagsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(tag.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedTagsIDs(); len(nodes) > 0 && !_u.mutation.TagsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.TagsTable,
+			Columns: []string{user.TagsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(tag.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.TagsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.TagsTable,
+			Columns: []string{user.TagsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(tag.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.AuditLogsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.AuditLogsTable,
+			Columns: []string{user.AuditLogsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(auditlog.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedAuditLogsIDs(); len(nodes) > 0 && !_u.mutation.AuditLogsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.AuditLogsTable,
+			Columns: []string{user.AuditLogsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(auditlog.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.AuditLogsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.AuditLogsTable,
+			Columns: []string{user.AuditLogsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(auditlog.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.ShareTokensCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.ShareTokensTable,
+			Columns: []string{user.ShareTokensColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(sharetoken.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedShareTokensIDs(); len(nodes) > 0 && !_u.mutation.ShareTokensCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.ShareTokensTable,
+			Columns: []string{user.ShareTokensColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(sharetoken.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.ShareTokensIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.ShareTokensTable,
+			Columns: []string{user.ShareTokensColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(sharetoken.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	_node = &User{config: _u.config}
 	_spec.Assign = _node.assignValues

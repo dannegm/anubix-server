@@ -12,7 +12,18 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"github.com/dannegm/anubix-server/ent/attachment"
+	"github.com/dannegm/anubix-server/ent/auditlog"
+	"github.com/dannegm/anubix-server/ent/block"
+	"github.com/dannegm/anubix-server/ent/device"
+	"github.com/dannegm/anubix-server/ent/entry"
+	"github.com/dannegm/anubix-server/ent/entrytag"
+	"github.com/dannegm/anubix-server/ent/secret"
+	"github.com/dannegm/anubix-server/ent/session"
+	"github.com/dannegm/anubix-server/ent/sharetoken"
+	"github.com/dannegm/anubix-server/ent/tag"
 	"github.com/dannegm/anubix-server/ent/user"
+	"github.com/dannegm/anubix-server/ent/vault"
 )
 
 // ent aliases to avoid import conflicts in user's code.
@@ -73,7 +84,18 @@ var (
 func checkColumn(t, c string) error {
 	initCheck.Do(func() {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
-			user.Table: user.ValidColumn,
+			attachment.Table: attachment.ValidColumn,
+			auditlog.Table:   auditlog.ValidColumn,
+			block.Table:      block.ValidColumn,
+			device.Table:     device.ValidColumn,
+			entry.Table:      entry.ValidColumn,
+			entrytag.Table:   entrytag.ValidColumn,
+			secret.Table:     secret.ValidColumn,
+			session.Table:    session.ValidColumn,
+			sharetoken.Table: sharetoken.ValidColumn,
+			tag.Table:        tag.ValidColumn,
+			user.Table:       user.ValidColumn,
+			vault.Table:      vault.ValidColumn,
 		})
 	})
 	return columnCheck(t, c)

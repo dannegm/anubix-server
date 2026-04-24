@@ -16,18 +16,102 @@ import (
 type User struct {
 	config `json:"-"`
 	// ID of the ent.
-	ID int `json:"id,omitempty"`
-	// Name holds the value of the "name" field.
-	Name string `json:"name,omitempty"`
+	ID string `json:"id,omitempty"`
 	// Email holds the value of the "email" field.
 	Email string `json:"email,omitempty"`
-	// Password holds the value of the "password" field.
-	Password string `json:"-"`
+	// AuthHash holds the value of the "auth_hash" field.
+	AuthHash string `json:"-"`
+	// Salt holds the value of the "salt" field.
+	Salt string `json:"salt,omitempty"`
+	// EmailVerifiedAt holds the value of the "email_verified_at" field.
+	EmailVerifiedAt *time.Time `json:"email_verified_at,omitempty"`
+	// TwoFactorSecret holds the value of the "two_factor_secret" field.
+	TwoFactorSecret *string `json:"-"`
+	// TwoFactorEnabled holds the value of the "two_factor_enabled" field.
+	TwoFactorEnabled bool `json:"two_factor_enabled,omitempty"`
+	// PasswordResetToken holds the value of the "password_reset_token" field.
+	PasswordResetToken *string `json:"password_reset_token,omitempty"`
+	// PasswordResetExpiresAt holds the value of the "password_reset_expires_at" field.
+	PasswordResetExpiresAt *time.Time `json:"password_reset_expires_at,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
-	// UpdatedAt holds the value of the "updated_at" field.
-	UpdatedAt    time.Time `json:"updated_at,omitempty"`
+	// Edges holds the relations/edges for other nodes in the graph.
+	// The values are being populated by the UserQuery when eager-loading is set.
+	Edges        UserEdges `json:"edges"`
 	selectValues sql.SelectValues
+}
+
+// UserEdges holds the relations/edges for other nodes in the graph.
+type UserEdges struct {
+	// Vaults holds the value of the vaults edge.
+	Vaults []*Vault `json:"vaults,omitempty"`
+	// Devices holds the value of the devices edge.
+	Devices []*Device `json:"devices,omitempty"`
+	// Sessions holds the value of the sessions edge.
+	Sessions []*Session `json:"sessions,omitempty"`
+	// Tags holds the value of the tags edge.
+	Tags []*Tag `json:"tags,omitempty"`
+	// AuditLogs holds the value of the audit_logs edge.
+	AuditLogs []*AuditLog `json:"audit_logs,omitempty"`
+	// ShareTokens holds the value of the share_tokens edge.
+	ShareTokens []*ShareToken `json:"share_tokens,omitempty"`
+	// loadedTypes holds the information for reporting if a
+	// type was loaded (or requested) in eager-loading or not.
+	loadedTypes [6]bool
+}
+
+// VaultsOrErr returns the Vaults value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) VaultsOrErr() ([]*Vault, error) {
+	if e.loadedTypes[0] {
+		return e.Vaults, nil
+	}
+	return nil, &NotLoadedError{edge: "vaults"}
+}
+
+// DevicesOrErr returns the Devices value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) DevicesOrErr() ([]*Device, error) {
+	if e.loadedTypes[1] {
+		return e.Devices, nil
+	}
+	return nil, &NotLoadedError{edge: "devices"}
+}
+
+// SessionsOrErr returns the Sessions value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) SessionsOrErr() ([]*Session, error) {
+	if e.loadedTypes[2] {
+		return e.Sessions, nil
+	}
+	return nil, &NotLoadedError{edge: "sessions"}
+}
+
+// TagsOrErr returns the Tags value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) TagsOrErr() ([]*Tag, error) {
+	if e.loadedTypes[3] {
+		return e.Tags, nil
+	}
+	return nil, &NotLoadedError{edge: "tags"}
+}
+
+// AuditLogsOrErr returns the AuditLogs value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) AuditLogsOrErr() ([]*AuditLog, error) {
+	if e.loadedTypes[4] {
+		return e.AuditLogs, nil
+	}
+	return nil, &NotLoadedError{edge: "audit_logs"}
+}
+
+// ShareTokensOrErr returns the ShareTokens value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) ShareTokensOrErr() ([]*ShareToken, error) {
+	if e.loadedTypes[5] {
+		return e.ShareTokens, nil
+	}
+	return nil, &NotLoadedError{edge: "share_tokens"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -35,11 +119,11 @@ func (*User) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case user.FieldID:
-			values[i] = new(sql.NullInt64)
-		case user.FieldName, user.FieldEmail, user.FieldPassword:
+		case user.FieldTwoFactorEnabled:
+			values[i] = new(sql.NullBool)
+		case user.FieldID, user.FieldEmail, user.FieldAuthHash, user.FieldSalt, user.FieldTwoFactorSecret, user.FieldPasswordResetToken:
 			values[i] = new(sql.NullString)
-		case user.FieldCreatedAt, user.FieldUpdatedAt:
+		case user.FieldEmailVerifiedAt, user.FieldPasswordResetExpiresAt, user.FieldCreatedAt:
 			values[i] = new(sql.NullTime)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -57,16 +141,10 @@ func (_m *User) assignValues(columns []string, values []any) error {
 	for i := range columns {
 		switch columns[i] {
 		case user.FieldID:
-			value, ok := values[i].(*sql.NullInt64)
-			if !ok {
-				return fmt.Errorf("unexpected type %T for field id", value)
-			}
-			_m.ID = int(value.Int64)
-		case user.FieldName:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field name", values[i])
+				return fmt.Errorf("unexpected type %T for field id", values[i])
 			} else if value.Valid {
-				_m.Name = value.String
+				_m.ID = value.String
 			}
 		case user.FieldEmail:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -74,23 +152,57 @@ func (_m *User) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				_m.Email = value.String
 			}
-		case user.FieldPassword:
+		case user.FieldAuthHash:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field password", values[i])
+				return fmt.Errorf("unexpected type %T for field auth_hash", values[i])
 			} else if value.Valid {
-				_m.Password = value.String
+				_m.AuthHash = value.String
+			}
+		case user.FieldSalt:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field salt", values[i])
+			} else if value.Valid {
+				_m.Salt = value.String
+			}
+		case user.FieldEmailVerifiedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field email_verified_at", values[i])
+			} else if value.Valid {
+				_m.EmailVerifiedAt = new(time.Time)
+				*_m.EmailVerifiedAt = value.Time
+			}
+		case user.FieldTwoFactorSecret:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field two_factor_secret", values[i])
+			} else if value.Valid {
+				_m.TwoFactorSecret = new(string)
+				*_m.TwoFactorSecret = value.String
+			}
+		case user.FieldTwoFactorEnabled:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field two_factor_enabled", values[i])
+			} else if value.Valid {
+				_m.TwoFactorEnabled = value.Bool
+			}
+		case user.FieldPasswordResetToken:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field password_reset_token", values[i])
+			} else if value.Valid {
+				_m.PasswordResetToken = new(string)
+				*_m.PasswordResetToken = value.String
+			}
+		case user.FieldPasswordResetExpiresAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field password_reset_expires_at", values[i])
+			} else if value.Valid {
+				_m.PasswordResetExpiresAt = new(time.Time)
+				*_m.PasswordResetExpiresAt = value.Time
 			}
 		case user.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
 			} else if value.Valid {
 				_m.CreatedAt = value.Time
-			}
-		case user.FieldUpdatedAt:
-			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
-			} else if value.Valid {
-				_m.UpdatedAt = value.Time
 			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])
@@ -103,6 +215,36 @@ func (_m *User) assignValues(columns []string, values []any) error {
 // This includes values selected through modifiers, order, etc.
 func (_m *User) Value(name string) (ent.Value, error) {
 	return _m.selectValues.Get(name)
+}
+
+// QueryVaults queries the "vaults" edge of the User entity.
+func (_m *User) QueryVaults() *VaultQuery {
+	return NewUserClient(_m.config).QueryVaults(_m)
+}
+
+// QueryDevices queries the "devices" edge of the User entity.
+func (_m *User) QueryDevices() *DeviceQuery {
+	return NewUserClient(_m.config).QueryDevices(_m)
+}
+
+// QuerySessions queries the "sessions" edge of the User entity.
+func (_m *User) QuerySessions() *SessionQuery {
+	return NewUserClient(_m.config).QuerySessions(_m)
+}
+
+// QueryTags queries the "tags" edge of the User entity.
+func (_m *User) QueryTags() *TagQuery {
+	return NewUserClient(_m.config).QueryTags(_m)
+}
+
+// QueryAuditLogs queries the "audit_logs" edge of the User entity.
+func (_m *User) QueryAuditLogs() *AuditLogQuery {
+	return NewUserClient(_m.config).QueryAuditLogs(_m)
+}
+
+// QueryShareTokens queries the "share_tokens" edge of the User entity.
+func (_m *User) QueryShareTokens() *ShareTokenQuery {
+	return NewUserClient(_m.config).QueryShareTokens(_m)
 }
 
 // Update returns a builder for updating this User.
@@ -128,19 +270,36 @@ func (_m *User) String() string {
 	var builder strings.Builder
 	builder.WriteString("User(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", _m.ID))
-	builder.WriteString("name=")
-	builder.WriteString(_m.Name)
-	builder.WriteString(", ")
 	builder.WriteString("email=")
 	builder.WriteString(_m.Email)
 	builder.WriteString(", ")
-	builder.WriteString("password=<sensitive>")
+	builder.WriteString("auth_hash=<sensitive>")
+	builder.WriteString(", ")
+	builder.WriteString("salt=")
+	builder.WriteString(_m.Salt)
+	builder.WriteString(", ")
+	if v := _m.EmailVerifiedAt; v != nil {
+		builder.WriteString("email_verified_at=")
+		builder.WriteString(v.Format(time.ANSIC))
+	}
+	builder.WriteString(", ")
+	builder.WriteString("two_factor_secret=<sensitive>")
+	builder.WriteString(", ")
+	builder.WriteString("two_factor_enabled=")
+	builder.WriteString(fmt.Sprintf("%v", _m.TwoFactorEnabled))
+	builder.WriteString(", ")
+	if v := _m.PasswordResetToken; v != nil {
+		builder.WriteString("password_reset_token=")
+		builder.WriteString(*v)
+	}
+	builder.WriteString(", ")
+	if v := _m.PasswordResetExpiresAt; v != nil {
+		builder.WriteString("password_reset_expires_at=")
+		builder.WriteString(v.Format(time.ANSIC))
+	}
 	builder.WriteString(", ")
 	builder.WriteString("created_at=")
 	builder.WriteString(_m.CreatedAt.Format(time.ANSIC))
-	builder.WriteString(", ")
-	builder.WriteString("updated_at=")
-	builder.WriteString(_m.UpdatedAt.Format(time.ANSIC))
 	builder.WriteByte(')')
 	return builder.String()
 }

@@ -12,8 +12,30 @@ import (
 // Tx is a transactional client that is created by calling Client.Tx().
 type Tx struct {
 	config
+	// Attachment is the client for interacting with the Attachment builders.
+	Attachment *AttachmentClient
+	// AuditLog is the client for interacting with the AuditLog builders.
+	AuditLog *AuditLogClient
+	// Block is the client for interacting with the Block builders.
+	Block *BlockClient
+	// Device is the client for interacting with the Device builders.
+	Device *DeviceClient
+	// Entry is the client for interacting with the Entry builders.
+	Entry *EntryClient
+	// EntryTag is the client for interacting with the EntryTag builders.
+	EntryTag *EntryTagClient
+	// Secret is the client for interacting with the Secret builders.
+	Secret *SecretClient
+	// Session is the client for interacting with the Session builders.
+	Session *SessionClient
+	// ShareToken is the client for interacting with the ShareToken builders.
+	ShareToken *ShareTokenClient
+	// Tag is the client for interacting with the Tag builders.
+	Tag *TagClient
 	// User is the client for interacting with the User builders.
 	User *UserClient
+	// Vault is the client for interacting with the Vault builders.
+	Vault *VaultClient
 
 	// lazily loaded.
 	client     *Client
@@ -145,7 +167,18 @@ func (tx *Tx) Client() *Client {
 }
 
 func (tx *Tx) init() {
+	tx.Attachment = NewAttachmentClient(tx.config)
+	tx.AuditLog = NewAuditLogClient(tx.config)
+	tx.Block = NewBlockClient(tx.config)
+	tx.Device = NewDeviceClient(tx.config)
+	tx.Entry = NewEntryClient(tx.config)
+	tx.EntryTag = NewEntryTagClient(tx.config)
+	tx.Secret = NewSecretClient(tx.config)
+	tx.Session = NewSessionClient(tx.config)
+	tx.ShareToken = NewShareTokenClient(tx.config)
+	tx.Tag = NewTagClient(tx.config)
 	tx.User = NewUserClient(tx.config)
+	tx.Vault = NewVaultClient(tx.config)
 }
 
 // txDriver wraps the given dialect.Tx with a nop dialect.Driver implementation.
@@ -155,7 +188,7 @@ func (tx *Tx) init() {
 // of them in order to commit or rollback the transaction.
 //
 // If a closed transaction is embedded in one of the generated entities, and the entity
-// applies a query, for example: User.QueryXXX(), the query will be executed
+// applies a query, for example: Attachment.QueryXXX(), the query will be executed
 // through the driver which created this transaction.
 //
 // Note that txDriver is not goroutine safe.

@@ -8,14 +8,286 @@ import (
 )
 
 var (
-	// UsersColumns holds the columns for the "users" table.
-	UsersColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt, Increment: true},
+	// AttachmentsColumns holds the columns for the "attachments" table.
+	AttachmentsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Unique: true},
+		{Name: "filename", Type: field.TypeString},
+		{Name: "mime_type", Type: field.TypeString},
+		{Name: "size_bytes", Type: field.TypeInt},
+		{Name: "ciphertext", Type: field.TypeBytes},
+		{Name: "iv", Type: field.TypeString},
+		{Name: "auth_tag", Type: field.TypeString},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "entry_attachments", Type: field.TypeString},
+	}
+	// AttachmentsTable holds the schema information for the "attachments" table.
+	AttachmentsTable = &schema.Table{
+		Name:       "attachments",
+		Columns:    AttachmentsColumns,
+		PrimaryKey: []*schema.Column{AttachmentsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "attachments_entries_attachments",
+				Columns:    []*schema.Column{AttachmentsColumns[8]},
+				RefColumns: []*schema.Column{EntriesColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+	}
+	// AuditLogsColumns holds the columns for the "audit_logs" table.
+	AuditLogsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Unique: true},
+		{Name: "action", Type: field.TypeEnum, Enums: []string{"login", "logout", "vault_created", "vault_deleted", "entry_created", "entry_updated", "entry_deleted", "entry_viewed", "entry_shared", "password_changed"}},
+		{Name: "ip_address", Type: field.TypeString, Nullable: true},
+		{Name: "user_agent", Type: field.TypeString, Nullable: true},
+		{Name: "metadata", Type: field.TypeJSON, Nullable: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "device_audit_logs", Type: field.TypeString, Nullable: true},
+		{Name: "entry_audit_logs", Type: field.TypeString, Nullable: true},
+		{Name: "user_audit_logs", Type: field.TypeString},
+	}
+	// AuditLogsTable holds the schema information for the "audit_logs" table.
+	AuditLogsTable = &schema.Table{
+		Name:       "audit_logs",
+		Columns:    AuditLogsColumns,
+		PrimaryKey: []*schema.Column{AuditLogsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "audit_logs_devices_audit_logs",
+				Columns:    []*schema.Column{AuditLogsColumns[6]},
+				RefColumns: []*schema.Column{DevicesColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "audit_logs_entries_audit_logs",
+				Columns:    []*schema.Column{AuditLogsColumns[7]},
+				RefColumns: []*schema.Column{EntriesColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "audit_logs_users_audit_logs",
+				Columns:    []*schema.Column{AuditLogsColumns[8]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+	}
+	// BlocksColumns holds the columns for the "blocks" table.
+	BlocksColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Unique: true},
+		{Name: "label", Type: field.TypeString},
+		{Name: "sort_order", Type: field.TypeInt, Default: 0},
+		{Name: "entry_blocks", Type: field.TypeString},
+	}
+	// BlocksTable holds the schema information for the "blocks" table.
+	BlocksTable = &schema.Table{
+		Name:       "blocks",
+		Columns:    BlocksColumns,
+		PrimaryKey: []*schema.Column{BlocksColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "blocks_entries_blocks",
+				Columns:    []*schema.Column{BlocksColumns[3]},
+				RefColumns: []*schema.Column{EntriesColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+	}
+	// DevicesColumns holds the columns for the "devices" table.
+	DevicesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Unique: true},
 		{Name: "name", Type: field.TypeString},
-		{Name: "email", Type: field.TypeString, Unique: true},
-		{Name: "password", Type: field.TypeString},
+		{Name: "fingerprint", Type: field.TypeString, Unique: true},
+		{Name: "device_type", Type: field.TypeEnum, Enums: []string{"web", "ios", "android", "desktop"}},
+		{Name: "last_seen_at", Type: field.TypeTime, Nullable: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "user_devices", Type: field.TypeString},
+	}
+	// DevicesTable holds the schema information for the "devices" table.
+	DevicesTable = &schema.Table{
+		Name:       "devices",
+		Columns:    DevicesColumns,
+		PrimaryKey: []*schema.Column{DevicesColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "devices_users_devices",
+				Columns:    []*schema.Column{DevicesColumns[6]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+	}
+	// EntriesColumns holds the columns for the "entries" table.
+	EntriesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Unique: true},
+		{Name: "label", Type: field.TypeString},
+		{Name: "icon", Type: field.TypeJSON, Nullable: true},
+		{Name: "preview", Type: field.TypeString, Nullable: true},
+		{Name: "has_otp", Type: field.TypeBool, Default: false},
+		{Name: "is_favorite", Type: field.TypeBool, Default: false},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "vault_entries", Type: field.TypeString},
+	}
+	// EntriesTable holds the schema information for the "entries" table.
+	EntriesTable = &schema.Table{
+		Name:       "entries",
+		Columns:    EntriesColumns,
+		PrimaryKey: []*schema.Column{EntriesColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "entries_vaults_entries",
+				Columns:    []*schema.Column{EntriesColumns[8]},
+				RefColumns: []*schema.Column{VaultsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+	}
+	// EntryTagsColumns holds the columns for the "entry_tags" table.
+	EntryTagsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "entry_entry_tags", Type: field.TypeString},
+		{Name: "tag_entry_tags", Type: field.TypeString},
+	}
+	// EntryTagsTable holds the schema information for the "entry_tags" table.
+	EntryTagsTable = &schema.Table{
+		Name:       "entry_tags",
+		Columns:    EntryTagsColumns,
+		PrimaryKey: []*schema.Column{EntryTagsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "entry_tags_entries_entry_tags",
+				Columns:    []*schema.Column{EntryTagsColumns[1]},
+				RefColumns: []*schema.Column{EntriesColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "entry_tags_tags_entry_tags",
+				Columns:    []*schema.Column{EntryTagsColumns[2]},
+				RefColumns: []*schema.Column{TagsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+	}
+	// SecretsColumns holds the columns for the "secrets" table.
+	SecretsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Unique: true},
+		{Name: "ciphertext", Type: field.TypeString, Size: 2147483647},
+		{Name: "iv", Type: field.TypeString},
+		{Name: "auth_tag", Type: field.TypeString},
+		{Name: "block_secrets", Type: field.TypeString},
+	}
+	// SecretsTable holds the schema information for the "secrets" table.
+	SecretsTable = &schema.Table{
+		Name:       "secrets",
+		Columns:    SecretsColumns,
+		PrimaryKey: []*schema.Column{SecretsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "secrets_blocks_secrets",
+				Columns:    []*schema.Column{SecretsColumns[4]},
+				RefColumns: []*schema.Column{BlocksColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+	}
+	// SessionsColumns holds the columns for the "sessions" table.
+	SessionsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Unique: true},
+		{Name: "token_hash", Type: field.TypeString, Unique: true},
+		{Name: "expires_at", Type: field.TypeTime},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "device_sessions", Type: field.TypeString},
+		{Name: "user_sessions", Type: field.TypeString},
+	}
+	// SessionsTable holds the schema information for the "sessions" table.
+	SessionsTable = &schema.Table{
+		Name:       "sessions",
+		Columns:    SessionsColumns,
+		PrimaryKey: []*schema.Column{SessionsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "sessions_devices_sessions",
+				Columns:    []*schema.Column{SessionsColumns[4]},
+				RefColumns: []*schema.Column{DevicesColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "sessions_users_sessions",
+				Columns:    []*schema.Column{SessionsColumns[5]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+	}
+	// ShareTokensColumns holds the columns for the "share_tokens" table.
+	ShareTokensColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Unique: true},
+		{Name: "type", Type: field.TypeEnum, Enums: []string{"permanent", "expiring", "one_time"}},
+		{Name: "api_key", Type: field.TypeString, Nullable: true},
+		{Name: "api_secret_hash", Type: field.TypeString, Nullable: true},
+		{Name: "ciphertext", Type: field.TypeString, Nullable: true, Size: 2147483647},
+		{Name: "iv", Type: field.TypeString, Nullable: true},
+		{Name: "auth_tag", Type: field.TypeString, Nullable: true},
+		{Name: "use_count", Type: field.TypeInt, Default: 0},
+		{Name: "used_at", Type: field.TypeTime, Nullable: true},
+		{Name: "expires_at", Type: field.TypeTime, Nullable: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "entry_share_tokens", Type: field.TypeString},
+		{Name: "user_share_tokens", Type: field.TypeString},
+	}
+	// ShareTokensTable holds the schema information for the "share_tokens" table.
+	ShareTokensTable = &schema.Table{
+		Name:       "share_tokens",
+		Columns:    ShareTokensColumns,
+		PrimaryKey: []*schema.Column{ShareTokensColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "share_tokens_entries_share_tokens",
+				Columns:    []*schema.Column{ShareTokensColumns[11]},
+				RefColumns: []*schema.Column{EntriesColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "share_tokens_users_share_tokens",
+				Columns:    []*schema.Column{ShareTokensColumns[12]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+	}
+	// TagsColumns holds the columns for the "tags" table.
+	TagsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Unique: true},
+		{Name: "name", Type: field.TypeString},
+		{Name: "user_tags", Type: field.TypeString},
+	}
+	// TagsTable holds the schema information for the "tags" table.
+	TagsTable = &schema.Table{
+		Name:       "tags",
+		Columns:    TagsColumns,
+		PrimaryKey: []*schema.Column{TagsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "tags_users_tags",
+				Columns:    []*schema.Column{TagsColumns[2]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+	}
+	// UsersColumns holds the columns for the "users" table.
+	UsersColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Unique: true},
+		{Name: "email", Type: field.TypeString, Unique: true},
+		{Name: "auth_hash", Type: field.TypeString},
+		{Name: "salt", Type: field.TypeString},
+		{Name: "email_verified_at", Type: field.TypeTime, Nullable: true},
+		{Name: "two_factor_secret", Type: field.TypeString, Nullable: true},
+		{Name: "two_factor_enabled", Type: field.TypeBool, Default: false},
+		{Name: "password_reset_token", Type: field.TypeString, Nullable: true},
+		{Name: "password_reset_expires_at", Type: field.TypeTime, Nullable: true},
+		{Name: "created_at", Type: field.TypeTime},
 	}
 	// UsersTable holds the schema information for the "users" table.
 	UsersTable = &schema.Table{
@@ -23,11 +295,62 @@ var (
 		Columns:    UsersColumns,
 		PrimaryKey: []*schema.Column{UsersColumns[0]},
 	}
+	// VaultsColumns holds the columns for the "vaults" table.
+	VaultsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Unique: true},
+		{Name: "name", Type: field.TypeString},
+		{Name: "encrypted_vault_key", Type: field.TypeString, Size: 2147483647},
+		{Name: "vault_key_iv", Type: field.TypeString},
+		{Name: "vault_key_auth_tag", Type: field.TypeString},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "user_vaults", Type: field.TypeString},
+	}
+	// VaultsTable holds the schema information for the "vaults" table.
+	VaultsTable = &schema.Table{
+		Name:       "vaults",
+		Columns:    VaultsColumns,
+		PrimaryKey: []*schema.Column{VaultsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "vaults_users_vaults",
+				Columns:    []*schema.Column{VaultsColumns[6]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
+		AttachmentsTable,
+		AuditLogsTable,
+		BlocksTable,
+		DevicesTable,
+		EntriesTable,
+		EntryTagsTable,
+		SecretsTable,
+		SessionsTable,
+		ShareTokensTable,
+		TagsTable,
 		UsersTable,
+		VaultsTable,
 	}
 )
 
 func init() {
+	AttachmentsTable.ForeignKeys[0].RefTable = EntriesTable
+	AuditLogsTable.ForeignKeys[0].RefTable = DevicesTable
+	AuditLogsTable.ForeignKeys[1].RefTable = EntriesTable
+	AuditLogsTable.ForeignKeys[2].RefTable = UsersTable
+	BlocksTable.ForeignKeys[0].RefTable = EntriesTable
+	DevicesTable.ForeignKeys[0].RefTable = UsersTable
+	EntriesTable.ForeignKeys[0].RefTable = VaultsTable
+	EntryTagsTable.ForeignKeys[0].RefTable = EntriesTable
+	EntryTagsTable.ForeignKeys[1].RefTable = TagsTable
+	SecretsTable.ForeignKeys[0].RefTable = BlocksTable
+	SessionsTable.ForeignKeys[0].RefTable = DevicesTable
+	SessionsTable.ForeignKeys[1].RefTable = UsersTable
+	ShareTokensTable.ForeignKeys[0].RefTable = EntriesTable
+	ShareTokensTable.ForeignKeys[1].RefTable = UsersTable
+	TagsTable.ForeignKeys[0].RefTable = UsersTable
+	VaultsTable.ForeignKeys[0].RefTable = UsersTable
 }

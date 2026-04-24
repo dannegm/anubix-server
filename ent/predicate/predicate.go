@@ -6,5 +6,38 @@ import (
 	"entgo.io/ent/dialect/sql"
 )
 
+// Attachment is the predicate function for attachment builders.
+type Attachment func(*sql.Selector)
+
+// AuditLog is the predicate function for auditlog builders.
+type AuditLog func(*sql.Selector)
+
+// Block is the predicate function for block builders.
+type Block func(*sql.Selector)
+
+// Device is the predicate function for device builders.
+type Device func(*sql.Selector)
+
+// Entry is the predicate function for entry builders.
+type Entry func(*sql.Selector)
+
+// EntryTag is the predicate function for entrytag builders.
+type EntryTag func(*sql.Selector)
+
+// Secret is the predicate function for secret builders.
+type Secret func(*sql.Selector)
+
+// Session is the predicate function for session builders.
+type Session func(*sql.Selector)
+
+// ShareToken is the predicate function for sharetoken builders.
+type ShareToken func(*sql.Selector)
+
+// Tag is the predicate function for tag builders.
+type Tag func(*sql.Selector)
+
 // User is the predicate function for user builders.
 type User func(*sql.Selector)
+
+// Vault is the predicate function for vault builders.
+type Vault func(*sql.Selector)

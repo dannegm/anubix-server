@@ -10,7 +10,13 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/dannegm/anubix-server/ent/auditlog"
+	"github.com/dannegm/anubix-server/ent/device"
+	"github.com/dannegm/anubix-server/ent/session"
+	"github.com/dannegm/anubix-server/ent/sharetoken"
+	"github.com/dannegm/anubix-server/ent/tag"
 	"github.com/dannegm/anubix-server/ent/user"
+	"github.com/dannegm/anubix-server/ent/vault"
 )
 
 // UserCreate is the builder for creating a User entity.
@@ -20,21 +26,91 @@ type UserCreate struct {
 	hooks    []Hook
 }
 
-// SetName sets the "name" field.
-func (_c *UserCreate) SetName(v string) *UserCreate {
-	_c.mutation.SetName(v)
-	return _c
-}
-
 // SetEmail sets the "email" field.
 func (_c *UserCreate) SetEmail(v string) *UserCreate {
 	_c.mutation.SetEmail(v)
 	return _c
 }
 
-// SetPassword sets the "password" field.
-func (_c *UserCreate) SetPassword(v string) *UserCreate {
-	_c.mutation.SetPassword(v)
+// SetAuthHash sets the "auth_hash" field.
+func (_c *UserCreate) SetAuthHash(v string) *UserCreate {
+	_c.mutation.SetAuthHash(v)
+	return _c
+}
+
+// SetSalt sets the "salt" field.
+func (_c *UserCreate) SetSalt(v string) *UserCreate {
+	_c.mutation.SetSalt(v)
+	return _c
+}
+
+// SetEmailVerifiedAt sets the "email_verified_at" field.
+func (_c *UserCreate) SetEmailVerifiedAt(v time.Time) *UserCreate {
+	_c.mutation.SetEmailVerifiedAt(v)
+	return _c
+}
+
+// SetNillableEmailVerifiedAt sets the "email_verified_at" field if the given value is not nil.
+func (_c *UserCreate) SetNillableEmailVerifiedAt(v *time.Time) *UserCreate {
+	if v != nil {
+		_c.SetEmailVerifiedAt(*v)
+	}
+	return _c
+}
+
+// SetTwoFactorSecret sets the "two_factor_secret" field.
+func (_c *UserCreate) SetTwoFactorSecret(v string) *UserCreate {
+	_c.mutation.SetTwoFactorSecret(v)
+	return _c
+}
+
+// SetNillableTwoFactorSecret sets the "two_factor_secret" field if the given value is not nil.
+func (_c *UserCreate) SetNillableTwoFactorSecret(v *string) *UserCreate {
+	if v != nil {
+		_c.SetTwoFactorSecret(*v)
+	}
+	return _c
+}
+
+// SetTwoFactorEnabled sets the "two_factor_enabled" field.
+func (_c *UserCreate) SetTwoFactorEnabled(v bool) *UserCreate {
+	_c.mutation.SetTwoFactorEnabled(v)
+	return _c
+}
+
+// SetNillableTwoFactorEnabled sets the "two_factor_enabled" field if the given value is not nil.
+func (_c *UserCreate) SetNillableTwoFactorEnabled(v *bool) *UserCreate {
+	if v != nil {
+		_c.SetTwoFactorEnabled(*v)
+	}
+	return _c
+}
+
+// SetPasswordResetToken sets the "password_reset_token" field.
+func (_c *UserCreate) SetPasswordResetToken(v string) *UserCreate {
+	_c.mutation.SetPasswordResetToken(v)
+	return _c
+}
+
+// SetNillablePasswordResetToken sets the "password_reset_token" field if the given value is not nil.
+func (_c *UserCreate) SetNillablePasswordResetToken(v *string) *UserCreate {
+	if v != nil {
+		_c.SetPasswordResetToken(*v)
+	}
+	return _c
+}
+
+// SetPasswordResetExpiresAt sets the "password_reset_expires_at" field.
+func (_c *UserCreate) SetPasswordResetExpiresAt(v time.Time) *UserCreate {
+	_c.mutation.SetPasswordResetExpiresAt(v)
+	return _c
+}
+
+// SetNillablePasswordResetExpiresAt sets the "password_reset_expires_at" field if the given value is not nil.
+func (_c *UserCreate) SetNillablePasswordResetExpiresAt(v *time.Time) *UserCreate {
+	if v != nil {
+		_c.SetPasswordResetExpiresAt(*v)
+	}
 	return _c
 }
 
@@ -52,18 +128,108 @@ func (_c *UserCreate) SetNillableCreatedAt(v *time.Time) *UserCreate {
 	return _c
 }
 
-// SetUpdatedAt sets the "updated_at" field.
-func (_c *UserCreate) SetUpdatedAt(v time.Time) *UserCreate {
-	_c.mutation.SetUpdatedAt(v)
+// SetID sets the "id" field.
+func (_c *UserCreate) SetID(v string) *UserCreate {
+	_c.mutation.SetID(v)
 	return _c
 }
 
-// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
-func (_c *UserCreate) SetNillableUpdatedAt(v *time.Time) *UserCreate {
+// SetNillableID sets the "id" field if the given value is not nil.
+func (_c *UserCreate) SetNillableID(v *string) *UserCreate {
 	if v != nil {
-		_c.SetUpdatedAt(*v)
+		_c.SetID(*v)
 	}
 	return _c
+}
+
+// AddVaultIDs adds the "vaults" edge to the Vault entity by IDs.
+func (_c *UserCreate) AddVaultIDs(ids ...string) *UserCreate {
+	_c.mutation.AddVaultIDs(ids...)
+	return _c
+}
+
+// AddVaults adds the "vaults" edges to the Vault entity.
+func (_c *UserCreate) AddVaults(v ...*Vault) *UserCreate {
+	ids := make([]string, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _c.AddVaultIDs(ids...)
+}
+
+// AddDeviceIDs adds the "devices" edge to the Device entity by IDs.
+func (_c *UserCreate) AddDeviceIDs(ids ...string) *UserCreate {
+	_c.mutation.AddDeviceIDs(ids...)
+	return _c
+}
+
+// AddDevices adds the "devices" edges to the Device entity.
+func (_c *UserCreate) AddDevices(v ...*Device) *UserCreate {
+	ids := make([]string, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _c.AddDeviceIDs(ids...)
+}
+
+// AddSessionIDs adds the "sessions" edge to the Session entity by IDs.
+func (_c *UserCreate) AddSessionIDs(ids ...string) *UserCreate {
+	_c.mutation.AddSessionIDs(ids...)
+	return _c
+}
+
+// AddSessions adds the "sessions" edges to the Session entity.
+func (_c *UserCreate) AddSessions(v ...*Session) *UserCreate {
+	ids := make([]string, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _c.AddSessionIDs(ids...)
+}
+
+// AddTagIDs adds the "tags" edge to the Tag entity by IDs.
+func (_c *UserCreate) AddTagIDs(ids ...string) *UserCreate {
+	_c.mutation.AddTagIDs(ids...)
+	return _c
+}
+
+// AddTags adds the "tags" edges to the Tag entity.
+func (_c *UserCreate) AddTags(v ...*Tag) *UserCreate {
+	ids := make([]string, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _c.AddTagIDs(ids...)
+}
+
+// AddAuditLogIDs adds the "audit_logs" edge to the AuditLog entity by IDs.
+func (_c *UserCreate) AddAuditLogIDs(ids ...string) *UserCreate {
+	_c.mutation.AddAuditLogIDs(ids...)
+	return _c
+}
+
+// AddAuditLogs adds the "audit_logs" edges to the AuditLog entity.
+func (_c *UserCreate) AddAuditLogs(v ...*AuditLog) *UserCreate {
+	ids := make([]string, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _c.AddAuditLogIDs(ids...)
+}
+
+// AddShareTokenIDs adds the "share_tokens" edge to the ShareToken entity by IDs.
+func (_c *UserCreate) AddShareTokenIDs(ids ...string) *UserCreate {
+	_c.mutation.AddShareTokenIDs(ids...)
+	return _c
+}
+
+// AddShareTokens adds the "share_tokens" edges to the ShareToken entity.
+func (_c *UserCreate) AddShareTokens(v ...*ShareToken) *UserCreate {
+	ids := make([]string, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _c.AddShareTokenIDs(ids...)
 }
 
 // Mutation returns the UserMutation object of the builder.
@@ -101,26 +267,22 @@ func (_c *UserCreate) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (_c *UserCreate) defaults() {
+	if _, ok := _c.mutation.TwoFactorEnabled(); !ok {
+		v := user.DefaultTwoFactorEnabled
+		_c.mutation.SetTwoFactorEnabled(v)
+	}
 	if _, ok := _c.mutation.CreatedAt(); !ok {
 		v := user.DefaultCreatedAt()
 		_c.mutation.SetCreatedAt(v)
 	}
-	if _, ok := _c.mutation.UpdatedAt(); !ok {
-		v := user.DefaultUpdatedAt()
-		_c.mutation.SetUpdatedAt(v)
+	if _, ok := _c.mutation.ID(); !ok {
+		v := user.DefaultID()
+		_c.mutation.SetID(v)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
 func (_c *UserCreate) check() error {
-	if _, ok := _c.mutation.Name(); !ok {
-		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "User.name"`)}
-	}
-	if v, ok := _c.mutation.Name(); ok {
-		if err := user.NameValidator(v); err != nil {
-			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "User.name": %w`, err)}
-		}
-	}
 	if _, ok := _c.mutation.Email(); !ok {
 		return &ValidationError{Name: "email", err: errors.New(`ent: missing required field "User.email"`)}
 	}
@@ -129,14 +291,22 @@ func (_c *UserCreate) check() error {
 			return &ValidationError{Name: "email", err: fmt.Errorf(`ent: validator failed for field "User.email": %w`, err)}
 		}
 	}
-	if _, ok := _c.mutation.Password(); !ok {
-		return &ValidationError{Name: "password", err: errors.New(`ent: missing required field "User.password"`)}
+	if _, ok := _c.mutation.AuthHash(); !ok {
+		return &ValidationError{Name: "auth_hash", err: errors.New(`ent: missing required field "User.auth_hash"`)}
+	}
+	if _, ok := _c.mutation.Salt(); !ok {
+		return &ValidationError{Name: "salt", err: errors.New(`ent: missing required field "User.salt"`)}
+	}
+	if v, ok := _c.mutation.Salt(); ok {
+		if err := user.SaltValidator(v); err != nil {
+			return &ValidationError{Name: "salt", err: fmt.Errorf(`ent: validator failed for field "User.salt": %w`, err)}
+		}
+	}
+	if _, ok := _c.mutation.TwoFactorEnabled(); !ok {
+		return &ValidationError{Name: "two_factor_enabled", err: errors.New(`ent: missing required field "User.two_factor_enabled"`)}
 	}
 	if _, ok := _c.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "User.created_at"`)}
-	}
-	if _, ok := _c.mutation.UpdatedAt(); !ok {
-		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "User.updated_at"`)}
 	}
 	return nil
 }
@@ -152,8 +322,13 @@ func (_c *UserCreate) sqlSave(ctx context.Context) (*User, error) {
 		}
 		return nil, err
 	}
-	id := _spec.ID.Value.(int64)
-	_node.ID = int(id)
+	if _spec.ID.Value != nil {
+		if id, ok := _spec.ID.Value.(string); ok {
+			_node.ID = id
+		} else {
+			return nil, fmt.Errorf("unexpected User.ID type: %T", _spec.ID.Value)
+		}
+	}
 	_c.mutation.id = &_node.ID
 	_c.mutation.done = true
 	return _node, nil
@@ -162,27 +337,143 @@ func (_c *UserCreate) sqlSave(ctx context.Context) (*User, error) {
 func (_c *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 	var (
 		_node = &User{config: _c.config}
-		_spec = sqlgraph.NewCreateSpec(user.Table, sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt))
+		_spec = sqlgraph.NewCreateSpec(user.Table, sqlgraph.NewFieldSpec(user.FieldID, field.TypeString))
 	)
-	if value, ok := _c.mutation.Name(); ok {
-		_spec.SetField(user.FieldName, field.TypeString, value)
-		_node.Name = value
+	if id, ok := _c.mutation.ID(); ok {
+		_node.ID = id
+		_spec.ID.Value = id
 	}
 	if value, ok := _c.mutation.Email(); ok {
 		_spec.SetField(user.FieldEmail, field.TypeString, value)
 		_node.Email = value
 	}
-	if value, ok := _c.mutation.Password(); ok {
-		_spec.SetField(user.FieldPassword, field.TypeString, value)
-		_node.Password = value
+	if value, ok := _c.mutation.AuthHash(); ok {
+		_spec.SetField(user.FieldAuthHash, field.TypeString, value)
+		_node.AuthHash = value
+	}
+	if value, ok := _c.mutation.Salt(); ok {
+		_spec.SetField(user.FieldSalt, field.TypeString, value)
+		_node.Salt = value
+	}
+	if value, ok := _c.mutation.EmailVerifiedAt(); ok {
+		_spec.SetField(user.FieldEmailVerifiedAt, field.TypeTime, value)
+		_node.EmailVerifiedAt = &value
+	}
+	if value, ok := _c.mutation.TwoFactorSecret(); ok {
+		_spec.SetField(user.FieldTwoFactorSecret, field.TypeString, value)
+		_node.TwoFactorSecret = &value
+	}
+	if value, ok := _c.mutation.TwoFactorEnabled(); ok {
+		_spec.SetField(user.FieldTwoFactorEnabled, field.TypeBool, value)
+		_node.TwoFactorEnabled = value
+	}
+	if value, ok := _c.mutation.PasswordResetToken(); ok {
+		_spec.SetField(user.FieldPasswordResetToken, field.TypeString, value)
+		_node.PasswordResetToken = &value
+	}
+	if value, ok := _c.mutation.PasswordResetExpiresAt(); ok {
+		_spec.SetField(user.FieldPasswordResetExpiresAt, field.TypeTime, value)
+		_node.PasswordResetExpiresAt = &value
 	}
 	if value, ok := _c.mutation.CreatedAt(); ok {
 		_spec.SetField(user.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
 	}
-	if value, ok := _c.mutation.UpdatedAt(); ok {
-		_spec.SetField(user.FieldUpdatedAt, field.TypeTime, value)
-		_node.UpdatedAt = value
+	if nodes := _c.mutation.VaultsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.VaultsTable,
+			Columns: []string{user.VaultsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(vault.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := _c.mutation.DevicesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.DevicesTable,
+			Columns: []string{user.DevicesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(device.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := _c.mutation.SessionsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.SessionsTable,
+			Columns: []string{user.SessionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(session.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := _c.mutation.TagsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.TagsTable,
+			Columns: []string{user.TagsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(tag.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := _c.mutation.AuditLogsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.AuditLogsTable,
+			Columns: []string{user.AuditLogsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(auditlog.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := _c.mutation.ShareTokensIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.ShareTokensTable,
+			Columns: []string{user.ShareTokensColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(sharetoken.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
 }
@@ -232,10 +523,6 @@ func (_c *UserCreateBulk) Save(ctx context.Context) ([]*User, error) {
 					return nil, err
 				}
 				mutation.id = &nodes[i].ID
-				if specs[i].ID.Value != nil {
-					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = int(id)
-				}
 				mutation.done = true
 				return nodes[i], nil
 			})

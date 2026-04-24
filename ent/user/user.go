@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 )
 
 const (
@@ -13,28 +14,94 @@ const (
 	Label = "user"
 	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
-	// FieldName holds the string denoting the name field in the database.
-	FieldName = "name"
 	// FieldEmail holds the string denoting the email field in the database.
 	FieldEmail = "email"
-	// FieldPassword holds the string denoting the password field in the database.
-	FieldPassword = "password"
+	// FieldAuthHash holds the string denoting the auth_hash field in the database.
+	FieldAuthHash = "auth_hash"
+	// FieldSalt holds the string denoting the salt field in the database.
+	FieldSalt = "salt"
+	// FieldEmailVerifiedAt holds the string denoting the email_verified_at field in the database.
+	FieldEmailVerifiedAt = "email_verified_at"
+	// FieldTwoFactorSecret holds the string denoting the two_factor_secret field in the database.
+	FieldTwoFactorSecret = "two_factor_secret"
+	// FieldTwoFactorEnabled holds the string denoting the two_factor_enabled field in the database.
+	FieldTwoFactorEnabled = "two_factor_enabled"
+	// FieldPasswordResetToken holds the string denoting the password_reset_token field in the database.
+	FieldPasswordResetToken = "password_reset_token"
+	// FieldPasswordResetExpiresAt holds the string denoting the password_reset_expires_at field in the database.
+	FieldPasswordResetExpiresAt = "password_reset_expires_at"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
-	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
-	FieldUpdatedAt = "updated_at"
+	// EdgeVaults holds the string denoting the vaults edge name in mutations.
+	EdgeVaults = "vaults"
+	// EdgeDevices holds the string denoting the devices edge name in mutations.
+	EdgeDevices = "devices"
+	// EdgeSessions holds the string denoting the sessions edge name in mutations.
+	EdgeSessions = "sessions"
+	// EdgeTags holds the string denoting the tags edge name in mutations.
+	EdgeTags = "tags"
+	// EdgeAuditLogs holds the string denoting the audit_logs edge name in mutations.
+	EdgeAuditLogs = "audit_logs"
+	// EdgeShareTokens holds the string denoting the share_tokens edge name in mutations.
+	EdgeShareTokens = "share_tokens"
 	// Table holds the table name of the user in the database.
 	Table = "users"
+	// VaultsTable is the table that holds the vaults relation/edge.
+	VaultsTable = "vaults"
+	// VaultsInverseTable is the table name for the Vault entity.
+	// It exists in this package in order to avoid circular dependency with the "vault" package.
+	VaultsInverseTable = "vaults"
+	// VaultsColumn is the table column denoting the vaults relation/edge.
+	VaultsColumn = "user_vaults"
+	// DevicesTable is the table that holds the devices relation/edge.
+	DevicesTable = "devices"
+	// DevicesInverseTable is the table name for the Device entity.
+	// It exists in this package in order to avoid circular dependency with the "device" package.
+	DevicesInverseTable = "devices"
+	// DevicesColumn is the table column denoting the devices relation/edge.
+	DevicesColumn = "user_devices"
+	// SessionsTable is the table that holds the sessions relation/edge.
+	SessionsTable = "sessions"
+	// SessionsInverseTable is the table name for the Session entity.
+	// It exists in this package in order to avoid circular dependency with the "session" package.
+	SessionsInverseTable = "sessions"
+	// SessionsColumn is the table column denoting the sessions relation/edge.
+	SessionsColumn = "user_sessions"
+	// TagsTable is the table that holds the tags relation/edge.
+	TagsTable = "tags"
+	// TagsInverseTable is the table name for the Tag entity.
+	// It exists in this package in order to avoid circular dependency with the "tag" package.
+	TagsInverseTable = "tags"
+	// TagsColumn is the table column denoting the tags relation/edge.
+	TagsColumn = "user_tags"
+	// AuditLogsTable is the table that holds the audit_logs relation/edge.
+	AuditLogsTable = "audit_logs"
+	// AuditLogsInverseTable is the table name for the AuditLog entity.
+	// It exists in this package in order to avoid circular dependency with the "auditlog" package.
+	AuditLogsInverseTable = "audit_logs"
+	// AuditLogsColumn is the table column denoting the audit_logs relation/edge.
+	AuditLogsColumn = "user_audit_logs"
+	// ShareTokensTable is the table that holds the share_tokens relation/edge.
+	ShareTokensTable = "share_tokens"
+	// ShareTokensInverseTable is the table name for the ShareToken entity.
+	// It exists in this package in order to avoid circular dependency with the "sharetoken" package.
+	ShareTokensInverseTable = "share_tokens"
+	// ShareTokensColumn is the table column denoting the share_tokens relation/edge.
+	ShareTokensColumn = "user_share_tokens"
 )
 
 // Columns holds all SQL columns for user fields.
 var Columns = []string{
 	FieldID,
-	FieldName,
 	FieldEmail,
-	FieldPassword,
+	FieldAuthHash,
+	FieldSalt,
+	FieldEmailVerifiedAt,
+	FieldTwoFactorSecret,
+	FieldTwoFactorEnabled,
+	FieldPasswordResetToken,
+	FieldPasswordResetExpiresAt,
 	FieldCreatedAt,
-	FieldUpdatedAt,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -48,16 +115,16 @@ func ValidColumn(column string) bool {
 }
 
 var (
-	// NameValidator is a validator for the "name" field. It is called by the builders before save.
-	NameValidator func(string) error
 	// EmailValidator is a validator for the "email" field. It is called by the builders before save.
 	EmailValidator func(string) error
+	// SaltValidator is a validator for the "salt" field. It is called by the builders before save.
+	SaltValidator func(string) error
+	// DefaultTwoFactorEnabled holds the default value on creation for the "two_factor_enabled" field.
+	DefaultTwoFactorEnabled bool
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
-	// DefaultUpdatedAt holds the default value on creation for the "updated_at" field.
-	DefaultUpdatedAt func() time.Time
-	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
-	UpdateDefaultUpdatedAt func() time.Time
+	// DefaultID holds the default value on creation for the "id" field.
+	DefaultID func() string
 )
 
 // OrderOption defines the ordering options for the User queries.
@@ -68,19 +135,44 @@ func ByID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldID, opts...).ToFunc()
 }
 
-// ByName orders the results by the name field.
-func ByName(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldName, opts...).ToFunc()
-}
-
 // ByEmail orders the results by the email field.
 func ByEmail(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldEmail, opts...).ToFunc()
 }
 
-// ByPassword orders the results by the password field.
-func ByPassword(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldPassword, opts...).ToFunc()
+// ByAuthHash orders the results by the auth_hash field.
+func ByAuthHash(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldAuthHash, opts...).ToFunc()
+}
+
+// BySalt orders the results by the salt field.
+func BySalt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldSalt, opts...).ToFunc()
+}
+
+// ByEmailVerifiedAt orders the results by the email_verified_at field.
+func ByEmailVerifiedAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldEmailVerifiedAt, opts...).ToFunc()
+}
+
+// ByTwoFactorSecret orders the results by the two_factor_secret field.
+func ByTwoFactorSecret(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldTwoFactorSecret, opts...).ToFunc()
+}
+
+// ByTwoFactorEnabled orders the results by the two_factor_enabled field.
+func ByTwoFactorEnabled(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldTwoFactorEnabled, opts...).ToFunc()
+}
+
+// ByPasswordResetToken orders the results by the password_reset_token field.
+func ByPasswordResetToken(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldPasswordResetToken, opts...).ToFunc()
+}
+
+// ByPasswordResetExpiresAt orders the results by the password_reset_expires_at field.
+func ByPasswordResetExpiresAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldPasswordResetExpiresAt, opts...).ToFunc()
 }
 
 // ByCreatedAt orders the results by the created_at field.
@@ -88,7 +180,128 @@ func ByCreatedAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldCreatedAt, opts...).ToFunc()
 }
 
-// ByUpdatedAt orders the results by the updated_at field.
-func ByUpdatedAt(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldUpdatedAt, opts...).ToFunc()
+// ByVaultsCount orders the results by vaults count.
+func ByVaultsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newVaultsStep(), opts...)
+	}
+}
+
+// ByVaults orders the results by vaults terms.
+func ByVaults(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newVaultsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByDevicesCount orders the results by devices count.
+func ByDevicesCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newDevicesStep(), opts...)
+	}
+}
+
+// ByDevices orders the results by devices terms.
+func ByDevices(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newDevicesStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// BySessionsCount orders the results by sessions count.
+func BySessionsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newSessionsStep(), opts...)
+	}
+}
+
+// BySessions orders the results by sessions terms.
+func BySessions(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newSessionsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByTagsCount orders the results by tags count.
+func ByTagsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newTagsStep(), opts...)
+	}
+}
+
+// ByTags orders the results by tags terms.
+func ByTags(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newTagsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByAuditLogsCount orders the results by audit_logs count.
+func ByAuditLogsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newAuditLogsStep(), opts...)
+	}
+}
+
+// ByAuditLogs orders the results by audit_logs terms.
+func ByAuditLogs(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newAuditLogsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByShareTokensCount orders the results by share_tokens count.
+func ByShareTokensCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newShareTokensStep(), opts...)
+	}
+}
+
+// ByShareTokens orders the results by share_tokens terms.
+func ByShareTokens(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newShareTokensStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+func newVaultsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(VaultsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, VaultsTable, VaultsColumn),
+	)
+}
+func newDevicesStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(DevicesInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, DevicesTable, DevicesColumn),
+	)
+}
+func newSessionsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(SessionsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, SessionsTable, SessionsColumn),
+	)
+}
+func newTagsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(TagsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, TagsTable, TagsColumn),
+	)
+}
+func newAuditLogsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(AuditLogsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, AuditLogsTable, AuditLogsColumn),
+	)
+}
+func newShareTokensStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(ShareTokensInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, ShareTokensTable, ShareTokensColumn),
+	)
 }
