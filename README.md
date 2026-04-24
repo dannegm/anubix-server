@@ -7,6 +7,7 @@ Backend for Anubix, a zero-knowledge password manager. All encryption and decryp
 - Go 1.22+
 - PostgreSQL 15+
 - [Air](https://github.com/air-verse/air) (optional, for hot-reload)
+- Docker & Docker Compose (optional, for local DB)
 
 ## Setup
 
@@ -14,13 +15,29 @@ Backend for Anubix, a zero-knowledge password manager. All encryption and decryp
 cp .env.example .env
 ```
 
-Edit `.env` and set your database connection:
+Edit `.env`:
 
 ```env
 PORT=8080
 APP_ENV=development
 DB_URL=postgres://user:password@localhost:5432/anubix?sslmode=disable
 ```
+
+## Database
+
+**Option A — Docker (recommended for local dev):**
+
+```bash
+docker compose up db -d
+```
+
+This spins up a PostgreSQL instance at `localhost:5432` using the credentials defined in `docker-compose.yml`.
+
+**Option B — Local or remote Postgres:**
+
+Point `DB_URL` in your `.env` to your instance.
+
+> Tables are created automatically on server startup (auto-migrate). No manual migrations needed.
 
 ## Run
 
